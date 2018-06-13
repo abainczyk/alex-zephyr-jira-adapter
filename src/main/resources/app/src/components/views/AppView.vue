@@ -10,10 +10,7 @@
 
 <script>
   export default {
-    name: 'jzd-app-view',
-    created() {
-      this.$router.push({name: 'projects'});
-    }
+    name: 'jzd-app-view'
   };
 </script>
 

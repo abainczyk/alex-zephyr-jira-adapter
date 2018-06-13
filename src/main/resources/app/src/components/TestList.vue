@@ -19,19 +19,23 @@
               <template slot="button-content">
                 <font-awesome-icon icon="bars"></font-awesome-icon>
               </template>
-              <b-dropdown-item @click="executeTest(test)">
-                Execute test
-              </b-dropdown-item>
-              <b-dropdown-divider></b-dropdown-divider>
-              <b-dropdown-item v-if="testMappingsMap[test.id] == null" @click="createMapping(test)">
-                Create mapping
-              </b-dropdown-item>
-              <b-dropdown-item v-if="testMappingsMap[test.id] != null" @click="updateTest(test)">
-                Update
-              </b-dropdown-item>
-              <b-dropdown-item v-if="testMappingsMap[test.id] != null" @click="removeMapping(test)">
-                Remove mapping
-              </b-dropdown-item>
+              <div v-if="testMappingsMap[test.id] == null">
+                <b-dropdown-item @click="createMapping(test)">
+                  Create mapping
+                </b-dropdown-item>
+              </div>
+              <div v-else>
+                <b-dropdown-item @click="executeTest(test)">
+                  Execute test
+                </b-dropdown-item>
+                <b-dropdown-divider></b-dropdown-divider>
+                <b-dropdown-item @click="updateTest(test)">
+                  Update
+                </b-dropdown-item>
+                <b-dropdown-item @click="removeMapping(test)">
+                  Remove mapping
+                </b-dropdown-item>
+              </div>
             </b-dropdown>
           </div>
         </div>
@@ -46,6 +50,8 @@
         v-on:close="handleMappingCreated"
     >
     </jzd-test-mapping-setup-modal>
+
+    <jzd-test-execute-modal ref="testExecuteModal"></jzd-test-execute-modal>
   </div>
 </template>
 
@@ -95,7 +101,7 @@
     },
     methods: {
       executeTest(test) {
-        // TODO
+        this.$refs.testExecuteModal.open(this.testMappingsMap[test.id]);
       },
 
       updateTest(test) {
@@ -125,12 +131,12 @@
 
       removeMapping(test) {
         testMappingApi.delete(test.fields.project.id, test.id)
-          .then(res => {
+          .then(() => {
             this.$toasted.success('The mapping has been removed for this test.');
-            Vue.set(this.testMappingsMap, test.id, null);
+            this.testMappingsMap[test.id] = null;
           })
           .catch(console.error);
-      }
+      },
     }
   };
 </script>

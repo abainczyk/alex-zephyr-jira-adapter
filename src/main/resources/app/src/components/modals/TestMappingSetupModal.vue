@@ -99,7 +99,7 @@
         const mapping = Object.assign({}, this.testMapping);
         mapping.alexTestId = testCase.id;
 
-        testMappingApi.create(mapping.jiraProjectId, mapping.jiraTestId, this.testMapping)
+        testMappingApi.create(mapping.jiraProjectId, mapping.jiraTestId, mapping)
           .then(res => {
             this.$toasted.success('The test has been created in ALEX.');
             this.close(res.data);

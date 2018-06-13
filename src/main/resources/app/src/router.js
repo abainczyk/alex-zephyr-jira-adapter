@@ -72,6 +72,7 @@ export default new Router({
       path: '/app',
       name: 'app',
       component: AppView,
+      redirect: 'app/projects',
       children: [
         {
           path: 'settings',

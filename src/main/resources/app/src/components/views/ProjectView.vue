@@ -32,18 +32,7 @@
         <h5>Messages</h5>
         <hr>
 
-        <b-tabs>
-          <b-tab title="Tests" active>
-            <br>
-
-            <jzd-issue-event-list :events="messages.issues"></jzd-issue-event-list>
-          </b-tab>
-          <b-tab title="Project">
-            <br>
-
-            <jzd-project-event-list :events="messages.events"></jzd-project-event-list>
-          </b-tab>
-        </b-tabs>
+        <jzd-issue-event-list :events="messages.issues"></jzd-issue-event-list>
 
       </div>
     </div>
