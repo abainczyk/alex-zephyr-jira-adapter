@@ -4,13 +4,13 @@ import de.alex.jirazapidemo.alex.AlexEndpoints;
 import de.alex.jirazapidemo.alex.entities.AlexProject;
 import de.alex.jirazapidemo.alex.entities.AlexTestCase;
 import de.alex.jirazapidemo.api.projectmappings.ProjectMappingService;
-import de.alex.jirazapidemo.api.settings.SettingsService;
 import de.alex.jirazapidemo.api.testmappings.TestMappingService;
 import de.alex.jirazapidemo.db.h2.tables.pojos.TestMapping;
 import de.alex.jirazapidemo.jira.JiraEndpoints;
 import de.alex.jirazapidemo.jira.entities.JiraIssue;
 import de.alex.jirazapidemo.jira.entities.JiraJqlIssueResult;
 import de.alex.jirazapidemo.jira.projects.JiraProject;
+import de.alex.jirazapidemo.services.SettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,19 +33,12 @@ public class SyncService {
     private TestMappingService testMappingService;
 
     @Autowired
-    private SettingsService settingsService;
-
-    @Autowired
     private AlexEndpoints alexEndpoints;
 
     @Autowired
     private JiraEndpoints jiraEndpoints;
 
-    public void sync() throws Exception {
-        if (settingsService.get().isEmpty()) {
-            throw new Exception("The adapter has not been configured yet.");
-        }
-
+    public void sync() {
         syncProjects();
         syncTests();
     }

@@ -16,7 +16,7 @@
 
 package de.alex.jirazapidemo.alex;
 
-import de.alex.jirazapidemo.api.settings.SettingsService;
+import de.alex.jirazapidemo.services.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +35,7 @@ public class AlexEndpoints {
     protected AlexResource alexResource;
 
     @Autowired
-    protected SettingsService settingsService;
+    private SettingsService settingsService;
 
     /** The HTTP Client. */
     private Client client = ClientBuilder.newClient();
@@ -46,7 +46,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder login() {
-        return client.target(uri() + "/users/login")
+        return client.target(url() + "/users/login")
                 .request(MediaType.APPLICATION_JSON);
     }
 
@@ -56,7 +56,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder projects() {
-        return client.target(uri() + "/projects")
+        return client.target(url() + "/projects")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -69,7 +69,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder project(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId)
+        return client.target(url() + "/projects/" + projectId)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -82,7 +82,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder symbols(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId + "/symbols")
+        return client.target(url() + "/projects/" + projectId + "/symbols")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -95,7 +95,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder symbolGroups(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId + "/groups?embed=symbols")
+        return client.target(url() + "/projects/" + projectId + "/groups?embed=symbols")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -108,7 +108,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder tests(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId + "/tests")
+        return client.target(url() + "/projects/" + projectId + "/tests")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -121,7 +121,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder testCases(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId + "/tests" + "?type=case")
+        return client.target(url() + "/projects/" + projectId + "/tests" + "?type=case")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -136,13 +136,13 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder test(Long projectId, Long testId) {
-        return client.target(uri() + "/projects/" + projectId + "/tests/" + testId)
+        return client.target(url() + "/projects/" + projectId + "/tests/" + testId)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
 
     public Invocation.Builder rootTest(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId + "/tests/root")
+        return client.target(url() + "/projects/" + projectId + "/tests/root")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -155,7 +155,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder executeTest(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId + "/tests/execute")
+        return client.target(url() + "/projects/" + projectId + "/tests/execute")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -168,7 +168,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder testStatus(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId + "/tests/status")
+        return client.target(url() + "/projects/" + projectId + "/tests/status")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -181,7 +181,7 @@ public class AlexEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder latestTestReport(Long projectId) {
-        return client.target(uri() + "/projects/" + projectId + "/tests/reports/latest")
+        return client.target(url() + "/projects/" + projectId + "/tests/reports/latest")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }
@@ -191,7 +191,8 @@ public class AlexEndpoints {
      *
      * @return The base URL.
      */
-    public String uri() {
-        return settingsService.getAlexSettings().getUri() + "/rest";
+    public String url() {
+        return settingsService.getAlexUrl() + "/rest";
     }
+
 }

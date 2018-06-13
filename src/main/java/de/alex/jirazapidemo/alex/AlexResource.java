@@ -2,7 +2,7 @@ package de.alex.jirazapidemo.alex;
 
 import de.alex.jirazapidemo.alex.entities.AlexJwt;
 import de.alex.jirazapidemo.alex.entities.AlexUserLogin;
-import de.alex.jirazapidemo.api.settings.SettingsService;
+import de.alex.jirazapidemo.services.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +15,10 @@ import javax.ws.rs.core.Response;
 public class AlexResource {
 
     @Autowired
-    protected SettingsService settingsService;
+    protected AlexEndpoints alexEndpoints;
 
     @Autowired
-    protected AlexEndpoints alexEndpoints;
+    protected SettingsService settingsService;
 
     /** The HTTP client. */
     protected final Client client = ClientBuilder.newClient();
@@ -39,8 +39,8 @@ public class AlexResource {
         }
 
         final AlexUserLogin login = new AlexUserLogin(
-                settingsService.getAlexSettings().getUsername(),
-                settingsService.getAlexSettings().getPassword()
+                settingsService.getAlexEmail(),
+                settingsService.getAlexPassword()
         );
 
         final Response response = alexEndpoints.login()

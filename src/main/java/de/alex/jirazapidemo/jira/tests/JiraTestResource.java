@@ -52,7 +52,7 @@ public class JiraTestResource extends JiraResource {
     public String getTestsByProjectId(@PathVariable("projectId") Long projectId) throws Exception {
         final ProjectMapping mapping = projectMappingService.getByJiraProjectId(projectId);
 
-        final Response response = client.target(jiraEndpoints.uri() + "/api/2/search?jql=" + URLEncoder.encode("project = " + mapping.getJiraProjectId() + " AND issuetype = Test", "UTF-8"))
+        final Response response = client.target(jiraEndpoints.url() + "/api/2/search?jql=" + URLEncoder.encode("project = " + mapping.getJiraProjectId() + " AND issuetype = Test", "UTF-8"))
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", auth())
                 .get();
@@ -68,7 +68,7 @@ public class JiraTestResource extends JiraResource {
                               @PathVariable("testId") Long testId) throws Exception {
         final ProjectMapping mapping = projectMappingService.getByJiraProjectId(projectId);
 
-        final Response response = client.target(jiraEndpoints.uri() + "/api/2/search?jql=" + URLEncoder.encode("project = " + mapping.getJiraProjectId() + " AND issuetype = Test AND id = " + testId, "UTF-8"))
+        final Response response = client.target(jiraEndpoints.url() + "/api/2/search?jql=" + URLEncoder.encode("project = " + mapping.getJiraProjectId() + " AND issuetype = Test AND id = " + testId, "UTF-8"))
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", auth())
                 .get();
@@ -82,7 +82,7 @@ public class JiraTestResource extends JiraResource {
     )
     public String getTestStepsByProjectIdAndTestId(@PathVariable("projectId") Long projectId,
                                                    @PathVariable("testId") Long testId) {
-        final Response response = client.target(jiraEndpoints.uri() + "/zapi/latest/teststep/" + testId)
+        final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/teststep/" + testId)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", auth())
                 .get();

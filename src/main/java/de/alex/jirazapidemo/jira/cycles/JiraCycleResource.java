@@ -54,7 +54,7 @@ public class JiraCycleResource extends JiraResource {
     public ResponseEntity getFolders(@PathVariable Long cycleId,
                                      @RequestParam("projectId") Long projectId,
                                      @RequestParam("versionId") Long versionId) {
-        final Response response = client.target(jiraEndpoints.uri() + "/zapi/latest/cycle/" + cycleId + "/folders?projectId=" + projectId + "&versionId=" + versionId)
+        final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/cycle/" + cycleId + "/folders?projectId=" + projectId + "&versionId=" + versionId)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", auth())
                 .get();
@@ -72,7 +72,7 @@ public class JiraCycleResource extends JiraResource {
                                            @PathVariable Long folderId,
                                            @RequestParam("projectId") Long projectId,
                                            @RequestParam("versionId") Long versionId) {
-        final Response response = client.target(jiraEndpoints.uri() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + projectId + "&versionId=" + versionId + "&folderId=" + folderId + "&offset=0&sorter=OrderId:ASC")
+        final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + projectId + "&versionId=" + versionId + "&folderId=" + folderId + "&offset=0&sorter=OrderId:ASC")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", auth())
                 .get();
@@ -90,7 +90,7 @@ public class JiraCycleResource extends JiraResource {
                                        @RequestBody CycleExecutionConfig config) {
 
         new Thread(() -> {
-            final Response res1 = client.target(jiraEndpoints.uri() + "/zapi/latest/cycle/" + cycleId + "/folders?projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId())
+            final Response res1 = client.target(jiraEndpoints.url() + "/zapi/latest/cycle/" + cycleId + "/folders?projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId())
                     .request(MediaType.APPLICATION_JSON)
                     .header("Authorization", auth())
                     .get();
@@ -99,7 +99,7 @@ public class JiraCycleResource extends JiraResource {
             });
 
             for (final JiraCycleFolder folder : folders) {
-                final Response res2 = client.target(jiraEndpoints.uri() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId() + "&folderId=" + folder.getFolderId() + "&offset=0&sorter=OrderId:ASC")
+                final Response res2 = client.target(jiraEndpoints.url() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId() + "&folderId=" + folder.getFolderId() + "&offset=0&sorter=OrderId:ASC")
                         .request(MediaType.APPLICATION_JSON)
                         .header("Authorization", auth())
                         .get();
@@ -133,7 +133,7 @@ public class JiraCycleResource extends JiraResource {
                                         @RequestBody FolderExecutionConfig config) {
 
         new Thread(() -> {
-            final Response res2 = client.target(jiraEndpoints.uri() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId() + "&folderId=" + config.getFolderId() + "&offset=0&sorter=OrderId:ASC")
+            final Response res2 = client.target(jiraEndpoints.url() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId() + "&folderId=" + config.getFolderId() + "&offset=0&sorter=OrderId:ASC")
                     .request(MediaType.APPLICATION_JSON)
                     .header("Authorization", auth())
                     .get();

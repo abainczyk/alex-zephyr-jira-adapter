@@ -1,15 +1,3 @@
--- the settings
-CREATE TABLE IF NOT EXISTS settings (
-  id       INT          NOT NULL AUTO_INCREMENT,
-  app_id   VARCHAR(10)  NOT NULL,
-  uri      VARCHAR(255) NOT NULL,
-  username VARCHAR(255) NOT NULL,
-  password VARCHAR(255) NOT NULL,
-
-  CONSTRAINT pk_t_settings PRIMARY KEY (id),
-  UNIQUE (app_id),
-);
-
 -- one to one mapping between a project in Jira and a project in ALEX
 CREATE TABLE IF NOT EXISTS project_mapping (
   id              INT    NOT NULL AUTO_INCREMENT,

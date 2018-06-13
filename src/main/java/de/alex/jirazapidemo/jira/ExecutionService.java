@@ -3,10 +3,10 @@ package de.alex.jirazapidemo.jira;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.alex.jirazapidemo.alex.AlexEndpoints;
-import de.alex.jirazapidemo.api.settings.SettingsService;
 import de.alex.jirazapidemo.api.testmappings.TestMappingService;
 import de.alex.jirazapidemo.db.h2.tables.pojos.TestMapping;
 import de.alex.jirazapidemo.jira.entities.JiraExecution;
+import de.alex.jirazapidemo.services.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -169,7 +169,7 @@ public class ExecutionService {
                         exec.setId(execution.getId());
                         exec.setStatus(reportJson.get("passed").asBoolean() ? StepResult.PASSED : StepResult.FAILED);
 
-                        final String reportUrl = "Report: " + settingsService.getAlexSettings().getUri() + "/#!/redirect?to=" + URLEncoder.encode("/projects/" + testMapping.getAlexProjectId() + "/tests/reports/" + reportJson.get("id").asText(), "UTF-8");
+                        final String reportUrl = "Report: " + settingsService.getAlexUrl() + "/#!/redirect?to=" + URLEncoder.encode("/projects/" + testMapping.getAlexProjectId() + "/tests/reports/" + reportJson.get("id").asText(), "UTF-8");
                         exec.setComment(reportUrl);
                         updateExecution(exec);
 
@@ -205,7 +205,7 @@ public class ExecutionService {
     }
 
     private void updateExecution(Execution execution) {
-        client.target(jiraEndpoints.uri() + "/zapi/latest/execution/" + execution.getId() + "/execute")
+        client.target(jiraEndpoints.url() + "/zapi/latest/execution/" + execution.getId() + "/execute")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", jiraResource.auth())
                 .put(Entity.json(execution));

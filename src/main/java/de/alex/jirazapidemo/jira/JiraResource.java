@@ -1,7 +1,6 @@
 package de.alex.jirazapidemo.jira;
 
-import de.alex.jirazapidemo.api.settings.SettingsService;
-import de.alex.jirazapidemo.db.h2.tables.pojos.Settings;
+import de.alex.jirazapidemo.services.SettingsService;
 import org.glassfish.jersey.internal.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,10 +12,10 @@ import javax.ws.rs.client.ClientBuilder;
 public class JiraResource {
 
     @Autowired
-    protected SettingsService settingsService;
+    protected JiraEndpoints jiraEndpoints;
 
     @Autowired
-    protected JiraEndpoints jiraEndpoints;
+    protected SettingsService settingsService;
 
     /** The HTTP client. */
     protected final Client client = ClientBuilder.newClient();
@@ -27,8 +26,7 @@ public class JiraResource {
      * @return The base64 encoded credentials.
      */
     public String auth() {
-        final Settings settings = settingsService.getJiraSettings();
-        final String credentials = settings.getUsername() + ":" + settings.getPassword();
+        final String credentials = settingsService.getJiraUsername() + ":" + settingsService.getJiraPassword();
 
         return "Basic " + Base64.encodeAsString(credentials.getBytes());
     }

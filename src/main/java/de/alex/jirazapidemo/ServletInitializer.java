@@ -16,14 +16,18 @@
 
 package de.alex.jirazapidemo;
 
-import de.alex.jirazapidemo.api.settings.SettingsService;
 import de.alex.jirazapidemo.api.sync.SyncService;
+import de.alex.jirazapidemo.services.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Properties;
 
 /** Initialize the application. */
 @Component
@@ -35,6 +39,9 @@ public class ServletInitializer extends SpringBootServletInitializer {
     @Autowired
     private SettingsService settingsService;
 
+    @Value("${app.configFile}")
+    private String configFile;
+
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(AlexForJiraAdapter.class);
@@ -44,13 +51,26 @@ public class ServletInitializer extends SpringBootServletInitializer {
     @PostConstruct
     public void sync() {
         try {
-            // no need to sync if the adapter has not been setup yet.
-            if (settingsService.get().isEmpty()) {
-                return;
+            if (configFile == null || configFile.trim().equals("")) {
+                throw new Exception("\nThe config file has not been specified\n");
+            }
+
+            final File file = new File(configFile);
+            if (!file.exists()) {
+                throw new Exception("\nThe config file cannot be found under the provided path.\n");
+            }
+
+            final Properties properties = new Properties();
+            properties.load(new FileInputStream(file));
+            settingsService.setProperties(properties);
+
+            if (!settingsService.isValid()) {
+                throw new Exception("The configuration is not valid");
             }
 
             syncService.sync();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             e.printStackTrace();
             System.exit(0);
         }

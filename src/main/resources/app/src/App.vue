@@ -5,19 +5,17 @@
 </template>
 
 <script>
-  import {setupApi} from './services/apis/setup-api';
-
   export default {
     name: 'jzd-app',
     created() {
-      setupApi.get()
-        .then(response => {
-          const data = response.data;
-          if (!data.jira && !data.alex) {
-            this.$router.push('setup');
-          }
-        })
-        .catch(console.error);
+      // setupApi.get()
+      //   .then(response => {
+      //     const data = response.data;
+      //     if (!data.jira && !data.alex) {
+      //       this.$router.push('setup');
+      //     }
+      //   })
+      //   .catch(console.error);
     }
   };
 </script>

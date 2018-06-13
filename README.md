@@ -45,6 +45,30 @@ Afterwards, the file `alex-zephyr-jira-adapter-1.0.0-SNAPSHOT.jar` is located in
 Move the file to the location where the adapter should be installed. 
  
  
+## Configuration
+
+The configuration for the adapter is specified in a config `.ini` file:
+
+```
+// config.ini
+
+alex.url=
+alex.email=
+alex.password=
+
+jira.url=
+jira.username=
+jira.password=
+ ```
+ 
+The URLs have to be specified **without** trailing slash:
+
+Wrong:    *http://localhost:8080/* 
+Correct:  *http://localhost:8080*
+
+When starting the adapter, make sure you provide the config file via a command line argument, see below.
+
+ 
 ## Starting the adapter 
  
 The adapter does not require an installation. 
@@ -52,7 +76,7 @@ Instead, open a terminal an navigate to where the jar file is located.
 Then, execute the following command in the terminal to start the application: 
  
 ```bash 
-java -jar jira-zephyr-jira-adapter-1.0.0-SNAPSHOT.jar 
+java -jar jira-zephyr-jira-adapter-1.0.0-SNAPSHOT.jar -app.configFile="C:\...\config.ini"
 ``` 
  
 Then, open a browser and go to *http://localhost:8080*. 
@@ -61,12 +85,7 @@ To change the port, append the command line argument `--server.port=XXXX` (where
  
 After the first start, a *target* folder is created in the directory where the application has been started.
 Inside that folder relies the database, so it is advised not to delete it.
- 
-### Setup 
- 
-On the first start, you are asked to setup the adapter by providing login information for Jira and ALEX. 
-For both applications, provide the corresponding base URL without a trailing */*.
- 
+  
  
 ## Development environment 
  

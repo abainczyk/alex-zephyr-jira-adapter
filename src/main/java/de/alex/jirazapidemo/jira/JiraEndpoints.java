@@ -1,6 +1,6 @@
 package de.alex.jirazapidemo.jira;
 
-import de.alex.jirazapidemo.api.settings.SettingsService;
+import de.alex.jirazapidemo.services.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +18,10 @@ import java.net.URLEncoder;
 public class JiraEndpoints {
 
     @Autowired
-    protected SettingsService settingsService;
+    private JiraResource jiraResource;
 
     @Autowired
-    private JiraResource jiraResource;
+    private SettingsService settingsService;
 
     /** The HTTP client. */
     protected final Client client = ClientBuilder.newClient();
@@ -34,7 +34,7 @@ public class JiraEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder cycles(String projectId) {
-        return client.target(uri() + "/zapi/latest/cycle?projectId=" + projectId + "&expand=executionSummaries")
+        return client.target(url() + "/zapi/latest/cycle?projectId=" + projectId + "&expand=executionSummaries")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", jiraResource.auth());
     }
@@ -47,7 +47,7 @@ public class JiraEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder issue(Long issueId) {
-        return client.target(uri() + "/api/2/issue/" + issueId)
+        return client.target(url() + "/api/2/issue/" + issueId)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", jiraResource.auth());
     }
@@ -58,7 +58,7 @@ public class JiraEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder projects() {
-        return client.target(uri() + "/api/2/project")
+        return client.target(url() + "/api/2/project")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", jiraResource.auth());
     }
@@ -71,7 +71,7 @@ public class JiraEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder project(String projectId) {
-        return client.target(uri() + "/api/2/project/" + projectId)
+        return client.target(url() + "/api/2/project/" + projectId)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", jiraResource.auth());
     }
@@ -82,7 +82,7 @@ public class JiraEndpoints {
      * @return The builder for the request.
      */
     public Invocation.Builder execution() {
-        return client.target(uri() + "/zapi/latest/execution")
+        return client.target(url() + "/zapi/latest/execution")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", jiraResource.auth());
     }
@@ -96,7 +96,7 @@ public class JiraEndpoints {
      */
     public Invocation.Builder tests(String projectId) {
         try {
-            return client.target(uri() + "/api/2/search?jql=" + URLEncoder.encode("project = " + projectId + " AND issuetype = Test", "UTF-8"))
+            return client.target(url() + "/api/2/search?jql=" + URLEncoder.encode("project = " + projectId + " AND issuetype = Test", "UTF-8"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
                     .header("Authorization", jiraResource.auth());
         } catch (UnsupportedEncodingException e) {
@@ -106,31 +106,31 @@ public class JiraEndpoints {
     }
 
     public Invocation.Builder versions(String projectId) {
-        return client.target(uri() + "/api/2/project/" + projectId + "/versions")
+        return client.target(url() + "/api/2/project/" + projectId + "/versions")
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", jiraResource.auth());
     }
 
     public Invocation.Builder testSteps(Long testId) {
-        return client.target(uri() + "/zapi/latest/teststep/" + testId)
+        return client.target(url() + "/zapi/latest/teststep/" + testId)
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", jiraResource.auth());
     }
 
     public Invocation.Builder testStep(Long testId, Long stepId) {
-        return client.target(uri() + "/zapi/latest/teststep/" + testId + "/" + stepId)
+        return client.target(url() + "/zapi/latest/teststep/" + testId + "/" + stepId)
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", jiraResource.auth());
     }
 
     public Invocation.Builder stepResults(Long executionId) {
-        return client.target(uri() + "/zapi/latest/stepResult?executionId=" + executionId)
+        return client.target(url() + "/zapi/latest/stepResult?executionId=" + executionId)
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", jiraResource.auth());
     }
 
     public Invocation.Builder stepResult(Long stepResultId) {
-        return client.target(uri() + "/zapi/latest/stepResult/" + stepResultId)
+        return client.target(url() + "/zapi/latest/stepResult/" + stepResultId)
                 .request(MediaType.APPLICATION_JSON_TYPE)
                 .header("Authorization", jiraResource.auth());
     }
@@ -140,8 +140,8 @@ public class JiraEndpoints {
      *
      * @return The base URL of the Jira REST API.
      */
-    public String uri() {
-        return settingsService.getJiraSettings().getUri() + "/rest";
+    public String url() {
+        return settingsService.getJiraUrl() + "/rest";
     }
 
 }

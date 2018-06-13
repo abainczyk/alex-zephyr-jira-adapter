@@ -2,9 +2,9 @@ package de.alex.jirazapidemo.api.status;
 
 import de.alex.jirazapidemo.alex.AlexEndpoints;
 import de.alex.jirazapidemo.alex.entities.AlexUserLogin;
-import de.alex.jirazapidemo.api.settings.SettingsService;
 import de.alex.jirazapidemo.jira.JiraEndpoints;
 import de.alex.jirazapidemo.jira.JiraResource;
+import de.alex.jirazapidemo.services.SettingsService;
 import org.glassfish.jersey.client.ClientProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +24,6 @@ public class StatusResource {
     private final String RESOURCE_URL = "/rest/status";
 
     @Autowired
-    private SettingsService settingsService;
-
-    @Autowired
     private JiraResource jiraResource;
 
     @Autowired
@@ -34,6 +31,9 @@ public class StatusResource {
 
     @Autowired
     private AlexEndpoints alexEndpoints;
+
+    @Autowired
+    private SettingsService settingsService;
 
     private final Client client;
 
@@ -55,7 +55,7 @@ public class StatusResource {
 
         // check if jira is reachable
         try {
-            client.target(jiraEndpoints.uri() + "/api/2/serverInfo")
+            client.target(jiraEndpoints.url() + "/api/2/serverInfo")
                     .request(MediaType.APPLICATION_JSON)
                     .get();
             connectedToJira = true;
@@ -64,7 +64,7 @@ public class StatusResource {
 
         // check if authentication with jira works
         try {
-            authenticatedInJira = client.target(jiraEndpoints.uri() + "/api/2/user")
+            authenticatedInJira = client.target(jiraEndpoints.url() + "/api/2/user")
                     .request(MediaType.APPLICATION_JSON)
                     .header("Authorization", jiraResource.auth())
                     .get()
@@ -74,7 +74,7 @@ public class StatusResource {
 
         // check if ALEX is reachable
         try {
-            connectedToAlex = client.target(alexEndpoints.uri())
+            connectedToAlex = client.target(alexEndpoints.url())
                     .request()
                     .get()
                     .getStatus() == 200;
@@ -85,15 +85,15 @@ public class StatusResource {
         try {
             authenticatedInAlex = alexEndpoints.login()
                     .post(Entity.json(new AlexUserLogin(
-                            settingsService.getAlexSettings().getUsername(),
-                            settingsService.getAlexSettings().getPassword()
+                            settingsService.getAlexEmail(),
+                            settingsService.getAlexPassword()
                     )))
                     .getStatus() == 200;
         } catch (Exception e) {
         }
 
         // check if the zapi add-on is enabled
-        final Response response = client.target(jiraEndpoints.uri() + "/zapi/latest/moduleInfo")
+        final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/moduleInfo")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", jiraResource.auth())
                 .get();

@@ -9,24 +9,10 @@
 </template>
 
 <script>
-  import {setupApi} from '../../services/apis/setup-api';
-
   export default {
     name: 'jzd-app-view',
     created() {
-      setupApi.get()
-        .then(res => {
-          const data = res.data;
-          if (data.jira == null && data.alex == null) {
-            this.$router.push({name: 'setup'});
-            return;
-          }
-
-          if (this.$route.name === 'app') {
-            this.$router.push({name: 'projects'});
-          }
-        })
-        .catch(console.error);
+      this.$router.push({name: 'projects'});
     }
   };
 </script>

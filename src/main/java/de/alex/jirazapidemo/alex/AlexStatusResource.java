@@ -18,7 +18,7 @@ public class AlexStatusResource extends AlexResource {
             value = RESOURCE_URL
     )
     public ResponseEntity status() {
-        final Response response = client.target(alexEndpoints.uri())
+        final Response response = client.target(alexEndpoints.url())
                 .request(MediaType.APPLICATION_JSON)
                 .get();
 

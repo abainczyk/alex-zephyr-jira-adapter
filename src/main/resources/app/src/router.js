@@ -4,13 +4,10 @@ import AppView from './components/views/AppView';
 import ProjectView from './components/views/ProjectView';
 import ProjectsView from './components/views/ProjectsView';
 import SettingsView from './components/views/SettingsView';
-import SetupView from './components/views/setup-view/SetupView';
 import TestsView from './components/views/TestsView';
 import EmptyView from './components/views/EmptyView';
 import {projectService} from './services/project.service';
 import {projectMappingApi} from './services/apis/project-mapping-api';
-import {settingsService} from './services/settings.service';
-import {settingsApi} from './services/apis/settings-api';
 
 Vue.use(Router);
 
@@ -26,15 +23,16 @@ Vue.use(Router);
  *    The callback for navigating to the 'to' route.
  */
 function beforeEnterProjects(to, from, next) {
-  if (settingsService.settings$.getValue() == null) {
-    settingsApi.get()
-      .then(res => {
-        settingsService.setSettings(res.data);
-        next();
-      });
-  } else {
-    next();
-  }
+  next();
+  // if (settingsService.settings$.getValue() == null) {
+  //   settingsApi.get()
+  //     .then(res => {
+  //       settingsService.setSettings(res.data);
+  //       next();
+  //     });
+  // } else {
+  //   next();
+  // }
 }
 
 /**
@@ -69,11 +67,6 @@ export default new Router({
       path: '/',
       name: 'home',
       redirect: 'app'
-    },
-    {
-      path: '/setup',
-      name: 'setup',
-      component: SetupView
     },
     {
       path: '/app',
