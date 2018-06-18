@@ -31,14 +31,20 @@ import javax.ws.rs.core.MediaType;
 @Service
 public class AlexEndpoints {
 
-    @Autowired
-    protected AlexResource alexResource;
+    private AlexResource alexResource;
 
-    @Autowired
     private SettingsService settingsService;
 
     /** The HTTP Client. */
-    private Client client = ClientBuilder.newClient();
+    private final Client client;
+
+    @Autowired
+    public AlexEndpoints(AlexResource alexResource, SettingsService settingsService) {
+        this.alexResource = alexResource;
+        this.settingsService = settingsService;
+
+        this.client = ClientBuilder.newClient();
+    }
 
     /**
      * Authenticate in ALEX.

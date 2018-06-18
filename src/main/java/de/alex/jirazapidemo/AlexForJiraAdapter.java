@@ -29,7 +29,6 @@ public class AlexForJiraAdapter {
 
     public static void main(String[] args) {
         System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
-
         SpringApplication.run(AlexForJiraAdapter.class, args);
     }
 
