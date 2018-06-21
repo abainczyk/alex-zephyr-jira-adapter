@@ -97,7 +97,7 @@ public class AlexTestCaseStep {
 
     public List<AlexParameterValue> getVisibleParameterValues() {
         return parameterValues.stream().filter(val -> {
-            return val.getParameter().getParameterType().equals("STRING") &&
+            return !val.getParameter().isPrivate() &&
                     val.getParameter().getType().equals("input");
         }).collect(Collectors.toList());
     }

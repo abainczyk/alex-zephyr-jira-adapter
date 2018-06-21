@@ -119,11 +119,11 @@ public class JiraTestResource extends JiraResource {
         final Response res1 = alexEndpoints.test(testMapping.getAlexProjectId(), testMapping.getAlexTestId()).get();
         final Response res2 = jiraEndpoints.testSteps(testId).get();
 
-        final AlexTestCase alexTest = res1.readEntity(AlexTestCase.class);
-        final LinkedList<JiraTestStep> jiraSteps = res2.readEntity(new GenericType<LinkedList<JiraTestStep>>() {
-        });
-
         try {
+            final AlexTestCase alexTest = res1.readEntity(AlexTestCase.class);
+            final LinkedList<JiraTestStep> jiraSteps = res2.readEntity(new GenericType<LinkedList<JiraTestStep>>() {
+            });
+
             while (alexTest.getSteps().size() < jiraSteps.size()) {
                 final JiraTestStep lastStep = jiraSteps.removeLast();
 

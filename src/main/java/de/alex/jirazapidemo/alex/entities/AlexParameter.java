@@ -17,6 +17,7 @@
 package de.alex.jirazapidemo.alex.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AlexParameter {
@@ -28,6 +29,8 @@ public class AlexParameter {
     private String parameterType;
 
     private String name;
+
+    private boolean isPrivate;
 
     public Long getId() {
         return id;
@@ -59,5 +62,15 @@ public class AlexParameter {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JsonProperty("private")
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    @JsonProperty("private")
+    public void setPrivate(boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 }

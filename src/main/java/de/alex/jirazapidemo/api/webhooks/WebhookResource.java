@@ -99,8 +99,6 @@ public class WebhookResource {
             value = RESOURCE_URL + "/alex/projects"
     )
     public ResponseEntity handleAlexProjects(final @RequestBody String data) throws Exception {
-        System.out.println("\n" + data + "\n");
-
         final JsonNode projectEvent = objectMapper.readTree(data);
         switch (projectEvent.get("eventType").asText()) {
             case "PROJECT_DELETED":
