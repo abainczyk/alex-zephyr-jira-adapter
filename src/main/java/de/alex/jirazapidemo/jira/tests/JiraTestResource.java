@@ -123,20 +123,11 @@ public class JiraTestResource extends JiraResource {
         final LinkedList<JiraTestStep> jiraSteps = res2.readEntity(new GenericType<LinkedList<JiraTestStep>>() {
         });
 
-        System.out.println("asd");
-
         try {
-
-            System.out.println(alexTest.getSteps().size());
-            System.out.println(jiraSteps.size());
-
             while (alexTest.getSteps().size() < jiraSteps.size()) {
                 final JiraTestStep lastStep = jiraSteps.removeLast();
 
                 final Response res = jiraEndpoints.testStep(testId, lastStep.getId()).delete();
-
-                System.out.println("remove: " + res.readEntity(String.class));
-
                 if (res.getStatus() != HttpStatus.OK.value()) {
                     throw new Exception("Could not remove step " + lastStep.getOrderId() + ".");
                 }
@@ -153,7 +144,6 @@ public class JiraTestResource extends JiraResource {
                 orderId++;
 
                 final Response res = jiraEndpoints.testSteps(testId).post(Entity.json(jiraStep));
-
                 if (res.getStatus() != HttpStatus.OK.value()) {
                     throw new Exception("Could not create a new step.");
                 }
@@ -180,13 +170,12 @@ public class JiraTestResource extends JiraResource {
                 jiraStep.setData(String.join("\n", data));
 
                 final Response res = jiraEndpoints.testStep(testId, jiraStep.getId()).put(Entity.json(jiraStep));
-
-                System.out.println("update: " + res.readEntity(String.class));
-
                 if (res.getStatus() != HttpStatus.OK.value()) {
                     throw new Exception("Could not update step " + jiraStep.getOrderId() + ".");
                 }
             }
+
+            testMappingService.resetTestUpdates(alexTest.getId());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new RestError(HttpStatus.BAD_REQUEST, e.getMessage()));
         }

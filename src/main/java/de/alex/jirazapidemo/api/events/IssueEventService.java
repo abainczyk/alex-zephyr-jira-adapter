@@ -49,8 +49,9 @@ public class IssueEventService {
     @Transactional
     public IssueEvent create(final IssueEvent event) {
         return dsl.insertInto(ISSUE_EVENT, ISSUE_EVENT.TYPE, ISSUE_EVENT.ISSUE_ID, ISSUE_EVENT.PROJECT_ID,
-                              ISSUE_EVENT.TIMESTAMP)
-                .values(event.getType(), event.getIssueId(), event.getProjectId(), event.getTimestamp())
+                              ISSUE_EVENT.ISSUE_SUMMARY, ISSUE_EVENT.TIMESTAMP)
+                .values(event.getType(), event.getIssueId(), event.getProjectId(), event.getIssueSummary(),
+                        event.getTimestamp())
                 .returning()
                 .fetchOne()
                 .into(new IssueEvent());

@@ -16,13 +16,12 @@
 
 package de.alex.jirazapidemo.api.webhooks;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.alex.jirazapidemo.api.events.IssueEventService;
-import de.alex.jirazapidemo.api.events.ProjectEventService;
 import de.alex.jirazapidemo.api.projectmappings.ProjectMappingService;
 import de.alex.jirazapidemo.api.testmappings.TestMappingService;
 import de.alex.jirazapidemo.db.h2.tables.pojos.IssueEvent;
-import de.alex.jirazapidemo.db.h2.tables.pojos.ProjectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,8 +40,6 @@ public class WebhookResource {
 
     private ProjectMappingService projectMappingService;
 
-    private ProjectEventService projectEventService;
-
     private TestMappingService testMappingService;
 
     private final ObjectMapper objectMapper;
@@ -50,11 +47,9 @@ public class WebhookResource {
     @Autowired
     public WebhookResource(IssueEventService issueEventService,
                            ProjectMappingService projectMappingService,
-                           ProjectEventService projectEventService,
                            TestMappingService testMappingService) {
         this.issueEventService = issueEventService;
         this.projectMappingService = projectMappingService;
-        this.projectEventService = projectEventService;
         this.testMappingService = testMappingService;
 
         this.objectMapper = new ObjectMapper().setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
@@ -65,13 +60,12 @@ public class WebhookResource {
             value = RESOURCE_URL + "/jira/projects"
     )
     public ResponseEntity handleJiraProjects(final @RequestBody String data) throws Exception {
-        final ProjectEvent event = objectMapper.readValue(data, ProjectEvent.class);
-        projectEventService.create(event);
-
-        switch (event.getType()) {
+        final JsonNode projectEvent = objectMapper.readTree(data);
+        switch (projectEvent.get("type").asText()) {
             case "PROJECT_DELETED":
-                projectMappingService.deleteByJiraProjectId(event.getProjectId());
-                issueEventService.deleteByProjectId(event.getProjectId());
+                final Long projectId = projectEvent.get("projectId").asLong();
+                projectMappingService.deleteByJiraProjectId(projectId);
+                issueEventService.deleteByProjectId(projectId);
                 break;
             default:
                 break;
@@ -105,6 +99,19 @@ public class WebhookResource {
             value = RESOURCE_URL + "/alex/projects"
     )
     public ResponseEntity handleAlexProjects(final @RequestBody String data) throws Exception {
+        System.out.println("\n" + data + "\n");
+
+        final JsonNode projectEvent = objectMapper.readTree(data);
+        switch (projectEvent.get("eventType").asText()) {
+            case "PROJECT_DELETED":
+                final Long projectId = projectEvent.get("data").asLong();
+                testMappingService.deleteAllByAlexProjectId(projectId);
+                projectMappingService.deleteByAlexProjectId(projectId);
+                break;
+            default:
+                break;
+        }
+
         return ResponseEntity.ok().build();
     }
 
@@ -113,6 +120,21 @@ public class WebhookResource {
             value = RESOURCE_URL + "/alex/tests"
     )
     public ResponseEntity handleAlexTests(final @RequestBody String data) throws Exception {
+        final JsonNode testEvent = objectMapper.readTree(data);
+        final Long testId;
+        switch (testEvent.get("eventType").asText()) {
+            case "TEST_DELETED":
+                testId = testEvent.get("data").asLong();
+                testMappingService.deleteAllByAlexTestId(testId);
+                break;
+            case "TEST_UPDATED":
+                testId = testEvent.get("data").get("id").asLong();
+                testMappingService.incrementTestUpdates(testId);
+                break;
+            default:
+                break;
+        }
+
         return ResponseEntity.ok().build();
     }
 }

@@ -9,6 +9,12 @@
         <div class="d-flex flex-row align-items-center">
           <div class="w-100">
             {{test.fields.summary}}
+            <span
+                class="badge badge-info"
+                v-if="testMappingsMap[test.id] != null && testMappingsMap[test.id].updates > 0"
+            >
+              {{testMappingsMap[test.id].updates}} Updates
+            </span>
           </div>
           <div class="px-2">
             <span class="float-right badge badge-warning" v-if="testMappingsMap[test.id] == null">Not mapped</span>
@@ -17,7 +23,9 @@
           <div>
             <b-dropdown variant="outline-secondary border-0 rounded" size="sm" text="" :right="true" no-caret>
               <template slot="button-content">
-                <font-awesome-icon icon="bars"></font-awesome-icon>
+                <div style="position: relative">
+                  <font-awesome-icon icon="bars"></font-awesome-icon>
+                </div>
               </template>
               <div v-if="testMappingsMap[test.id] == null">
                 <b-dropdown-item @click="createMapping(test)">
@@ -31,6 +39,12 @@
                 <b-dropdown-divider></b-dropdown-divider>
                 <b-dropdown-item @click="updateTest(test)">
                   Update
+                  <span
+                      class="badge badge-info"
+                      v-if="testMappingsMap[test.id] != null && testMappingsMap[test.id].updates > 0"
+                  >
+                    {{testMappingsMap[test.id].updates}}
+                  </span>
                 </b-dropdown-item>
                 <b-dropdown-item @click="removeMapping(test)">
                   Remove mapping
@@ -108,6 +122,7 @@
         jiraTestApi.update(this.projectId, test.id)
           .then(res => {
             this.$toasted.success('The test has been updated in Jira');
+            this.testMappingsMap[test.id].updates = 0;
           })
           .catch(err => {
             this.$toasted.error(`The test could not be updated in Jira. ${err.data.message}`);

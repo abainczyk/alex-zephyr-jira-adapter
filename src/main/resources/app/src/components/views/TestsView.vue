@@ -50,6 +50,15 @@
               </font-awesome-icon>
               Mapped only
             </b-dropdown-item>
+            <b-dropdown-item @click="activeTestFilter = testFilters.WITH_UPDATES">
+              <font-awesome-icon
+                  icon="check"
+                  class="mr-1"
+                  :class="{'invisible': activeTestFilter !== testFilters.WITH_UPDATES}"
+              >
+              </font-awesome-icon>
+              With updates
+            </b-dropdown-item>
           </b-dropdown>
           <hr>
         </div>
@@ -87,10 +96,12 @@
         versionsMap: {},
         tests: [],
         testMappingsMap: {},
+        projectId: null,
         testFilters: {
           ALL: 0,
           MAPPED_ONLY: 1,
-          UNMAPPED_ONLY: 2
+          UNMAPPED_ONLY: 2,
+          WITH_UPDATES: 3
         },
         activeTestFilter: null,
         refreshingTests: false,
@@ -106,47 +117,49 @@
             return this.tests.filter(t => this.testMappingsMap[t.id] != null);
           case this.testFilters.UNMAPPED_ONLY:
             return this.tests.filter(t => this.testMappingsMap[t.id] == null);
+          case this.testFilters.WITH_UPDATES:
+            return this.tests.filter(t => this.testMappingsMap[t.id] != null && this.testMappingsMap[t.id].updates > 0);
           default:
             return this.tests;
         }
       }
     },
     created() {
-      const projectId = this.$route.params.projectId;
+      this.projectId = this.$route.params.projectId;
       this.activeTestFilter = this.testFilters.ALL;
 
-      jiraVersionApi.find(projectId)
-        .then(res => {
-          res.data.forEach(version => this.versionsMap[version.id] = version);
-        })
+      jiraVersionApi.find(this.projectId)
+        .then(res => res.data.forEach(version => this.versionsMap[version.id] = version))
         .catch(console.error);
 
       this.loadCycles();
-
       this.loadTests();
-
-      testMappingApi.find(projectId)
-        .then(res => {
-          res.data.forEach(mapping => this.testMappingsMap[mapping.jiraTestId] = mapping);
-        })
-        .catch(console.error);
+      this.loadTestMappings();
     },
     methods: {
       loadTests() {
-        return jiraTestApi.find(this.$route.params.projectId)
+        return jiraTestApi.find(this.projectId)
           .then(res => this.tests = res.data.issues)
           .catch(console.error);
       },
+      loadTestMappings() {
+        this.testMappingsMap = {};
+        return testMappingApi.find(this.projectId)
+          .then(res => res.data.forEach(mapping => this.testMappingsMap[mapping.jiraTestId] = mapping))
+          .catch(console.error);
+      },
       loadCycles() {
-        return jiraCyclesApi.findAll(this.$route.params.projectId)
+        return jiraCyclesApi.find(this.projectId)
           .then(res => this.cycles = res.data)
           .catch(console.error);
       },
       refreshTests() {
         this.refreshingTests = true;
         this.loadTests().then(() => {
-          this.$toasted.success('Refreshing finished.');
-          this.refreshingTests = false;
+          this.loadTestMappings().then(() => {
+            this.$toasted.success('Refreshing finished.');
+            this.refreshingTests = false;
+          });
         });
       },
       refreshCycles() {

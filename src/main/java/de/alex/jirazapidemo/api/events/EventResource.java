@@ -17,7 +17,6 @@
 package de.alex.jirazapidemo.api.events;
 
 import de.alex.jirazapidemo.db.h2.tables.pojos.IssueEvent;
-import de.alex.jirazapidemo.db.h2.tables.pojos.ProjectEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,17 +33,6 @@ public class EventResource {
 
     @Autowired
     private IssueEventService issueEventService;
-
-    @Autowired
-    private ProjectEventService projectEventService;
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = RESOURCE_URL
-    )
-    private ResponseEntity<List<ProjectEvent>> getProjectEvents() {
-        return ResponseEntity.ok(projectEventService.get());
-    }
 
     @RequestMapping(
             method = RequestMethod.GET,

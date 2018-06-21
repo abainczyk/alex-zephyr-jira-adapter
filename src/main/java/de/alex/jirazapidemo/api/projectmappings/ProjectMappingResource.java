@@ -53,9 +53,6 @@ public class ProjectMappingResource {
     public ResponseEntity<ProjectMapping> create(@PathVariable("projectId") final Long projectId,
                                                  @RequestBody final ProjectMapping projectMapping) {
         final ProjectMapping mapping = projectMappingService.createOrUpdate(projectMapping);
-
-        // TODO create webhooks in ALEX
-
         return ResponseEntity.ok(mapping);
     }
 
@@ -66,9 +63,6 @@ public class ProjectMappingResource {
     public ResponseEntity<ProjectMapping> delete(@PathVariable("projectId") final Long projectId) {
         projectMappingService.deleteByJiraProjectId(projectId);
         issueEventService.deleteByProjectId(projectId);
-
-        // TODO delete webhooks in ALEX
-
         return ResponseEntity.noContent().build();
     }
 

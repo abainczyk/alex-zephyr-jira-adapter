@@ -7,7 +7,7 @@ export class JiraCyclesApi {
     this.url = `${apiUrl}/jira/cycles`;
   }
 
-  findAll(projectId) {
+  find(projectId) {
     return axios.get(`${this.url}?projectId=${projectId}`);
   }
 

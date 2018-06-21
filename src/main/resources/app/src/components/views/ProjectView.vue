@@ -46,7 +46,6 @@
   import {alexProjectApi} from '../../services/apis/alex/alex-project-api';
   import {projectMappingApi} from '../../services/apis/project-mapping-api';
   import {issueEventApi} from '../../services/apis/issue-event-api';
-  import {projectEventApi} from '../../services/apis/project-event-api';
 
   export default {
     name: 'jzd-project-view',
@@ -94,12 +93,6 @@
       issueEventApi.find(id)
         .then((res) => {
           this.messages.issues = res.data;
-        })
-        .catch(console.error);
-
-      projectEventApi.find()
-        .then((res) => {
-          this.messages.projects = res.data;
         })
         .catch(console.error);
     },

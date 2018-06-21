@@ -24,6 +24,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to quickly create requests to the REST API of ALEX.
@@ -31,18 +33,16 @@ import javax.ws.rs.core.MediaType;
 @Service
 public class AlexEndpoints {
 
+    @Autowired
     private AlexResource alexResource;
 
+    @Autowired
     private SettingsService settingsService;
 
     /** The HTTP Client. */
     private final Client client;
 
-    @Autowired
-    public AlexEndpoints(AlexResource alexResource, SettingsService settingsService) {
-        this.alexResource = alexResource;
-        this.settingsService = settingsService;
-
+    public AlexEndpoints() {
         this.client = ClientBuilder.newClient();
     }
 
@@ -188,6 +188,21 @@ public class AlexEndpoints {
      */
     public Invocation.Builder latestTestReport(Long projectId) {
         return client.target(url() + "/projects/" + projectId + "/tests/reports/latest")
+                .request(MediaType.APPLICATION_JSON)
+                .header("Authorization", alexResource.auth());
+    }
+
+    public Invocation.Builder webhooks() {
+        return client.target(url() + "/webhooks")
+                .request(MediaType.APPLICATION_JSON)
+                .header("Authorization", alexResource.auth());
+    }
+
+    public Invocation.Builder webhooksBatch(List<Long> webhookIds) {
+        final String ids = String.join(",", webhookIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.toList()));
+        return client.target(url() + "/webhooks/" + ids)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", alexResource.auth());
     }

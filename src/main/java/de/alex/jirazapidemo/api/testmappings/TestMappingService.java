@@ -109,4 +109,21 @@ public class TestMappingService {
                 .fetch()
                 .size() > 0;
     }
+
+    @Transactional
+    public void incrementTestUpdates(Long alexTestId) {
+        dsl.update(TEST_MAPPING)
+                .set(TEST_MAPPING.UPDATES, TEST_MAPPING.UPDATES.add(1))
+                .where(TEST_MAPPING.ALEX_TEST_ID.eq(alexTestId))
+                .execute();
+
+    }
+
+    @Transactional
+    public void resetTestUpdates(Long alexTestId) {
+        dsl.update(TEST_MAPPING)
+                .set(TEST_MAPPING.UPDATES, 0)
+                .where(TEST_MAPPING.ALEX_TEST_ID.eq(alexTestId))
+                .execute();
+    }
 }

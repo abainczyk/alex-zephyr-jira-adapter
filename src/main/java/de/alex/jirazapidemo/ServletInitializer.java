@@ -16,6 +16,7 @@
 
 package de.alex.jirazapidemo;
 
+import de.alex.jirazapidemo.alex.AlexEndpoints;
 import de.alex.jirazapidemo.api.sync.SyncService;
 import de.alex.jirazapidemo.services.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.client.Entity;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
@@ -39,6 +41,9 @@ public class ServletInitializer extends SpringBootServletInitializer {
     @Autowired
     private SettingsService settingsService;
 
+    @Autowired
+    private AlexEndpoints alexEndpoints;
+
     @Value("${app.configFile}")
     private String configFile;
 
@@ -49,7 +54,28 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
     /** Sync state between ALEX and Jira. */
     @PostConstruct
-    public void sync() {
+    public void init() {
+        sync();
+        registerWebhooks();
+    }
+
+    private void registerWebhooks() {
+        final String projectsWebhook = "{"
+                + "\"url\":\"http://localhost:9000/rest/wh/alex/projects\""
+                + ",\"name\":\"ALEX for Jira Adapter\""
+                + ",\"events\":[\"PROJECT_DELETED\"]"
+                + "}";
+        alexEndpoints.webhooks().post(Entity.json(projectsWebhook));
+
+        final String testsWebhook = "{"
+                + "\"url\":\"http://localhost:9000/rest/wh/alex/tests\""
+                + ",\"name\":\"ALEX for Jira Adapter\""
+                + ",\"events\":[\"TEST_UPDATED\",\"TEST_DELETED\"]"
+                + "}";
+        alexEndpoints.webhooks().post(Entity.json(testsWebhook));
+    }
+
+    private void sync() {
         try {
             if (configFile == null || configFile.trim().equals("")) {
                 throw new Exception("\nThe config file has not been specified\n");
@@ -75,5 +101,4 @@ public class ServletInitializer extends SpringBootServletInitializer {
             System.exit(0);
         }
     }
-
 }
