@@ -143,7 +143,6 @@
           .catch(console.error);
       },
       loadTestMappings() {
-        this.testMappingsMap = {};
         return testMappingApi.find(this.projectId)
           .then(res => res.data.forEach(mapping => this.testMappingsMap[mapping.jiraTestId] = mapping))
           .catch(console.error);
