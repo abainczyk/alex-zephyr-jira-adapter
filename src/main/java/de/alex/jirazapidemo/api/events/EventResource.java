@@ -17,7 +17,9 @@
 package de.alex.jirazapidemo.api.events;
 
 import de.alex.jirazapidemo.db.h2.tables.pojos.IssueEvent;
+import de.alex.jirazapidemo.utils.RestError;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,4 +44,17 @@ public class EventResource {
         return ResponseEntity.ok(issueEventService.getByProjectId(projectId));
     }
 
+    @RequestMapping(
+            method = RequestMethod.DELETE,
+            value = RESOURCE_URL + "/{projectId}/issues/{eventId}"
+    )
+    private ResponseEntity deleteIssueEvent(@PathVariable("projectId") Long projectId,
+                                            @PathVariable("eventId") int eventId) {
+        final int numDeleted = issueEventService.deleteById(eventId);
+        if (numDeleted == 0) {
+            return ResponseEntity.badRequest().body(new RestError(HttpStatus.BAD_REQUEST, "The event could not be deleted."));
+        } else {
+            return ResponseEntity.noContent().build();
+        }
+    }
 }

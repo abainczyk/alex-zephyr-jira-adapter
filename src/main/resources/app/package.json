@@ -1,5 +1,5 @@
 {
-  "name": "alex-zephyr-jira-adapter",
+  "name": "alex-for-jira-adapter",
   "version": "1.0.0-SNAPSHOT",
   "scripts": {
     "serve": "vue-cli-service serve",

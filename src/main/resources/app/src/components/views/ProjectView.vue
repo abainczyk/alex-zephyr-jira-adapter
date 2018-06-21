@@ -11,7 +11,6 @@
           Edit tests
         </router-link>
 
-
         <div v-if="jira.project != null && alex.project != null">
           <div class="card">
             <div class="card-body">
@@ -32,7 +31,7 @@
         <h5>Messages</h5>
         <hr>
 
-        <jzd-issue-event-list :events="messages.issues"></jzd-issue-event-list>
+        <jzd-issue-event-list :events="messages.issues" @deleted="onIssueDeleted"></jzd-issue-event-list>
 
       </div>
     </div>
@@ -59,41 +58,30 @@
           project: null
         },
         messages: {
-          issues: [],
-          projects: []
+          issues: []
         }
       };
     },
     created() {
-      const id = this.$route.params.projectId;
+      const projectId = this.$route.params.projectId;
 
-      jiraProjectApi.findOne(id)
-        .then((response) => {
-          console.log('jira:project', response);
-          this.jira.project = response.data;
-        })
+      jiraProjectApi.findOne(projectId)
+        .then(res => this.jira.project = res.data)
         .catch(console.error);
 
       alexProjectApi.find()
-        .then((response) => {
-          console.log('alex:projects', response);
-          const projects = response.data;
-
-          projectMappingApi.findOne(id)
+        .then(res => {
+          const projects = res.data;
+          return projectMappingApi.findOne(projectId)
             .then((response) => {
-              console.log('mapping', response);
-
               const mapping = response.data;
               this.alex.project = projects.find((p) => p.id === mapping.alexProjectId);
-            })
-            .catch(console.error);
+            });
         })
         .catch(console.error);
 
-      issueEventApi.find(id)
-        .then((res) => {
-          this.messages.issues = res.data;
-        })
+      issueEventApi.find(projectId)
+        .then(res => this.messages.issues = res.data)
         .catch(console.error);
     },
     methods: {
@@ -108,6 +96,11 @@
             this.$toasted.success(`The connection between ${this.jira.project.name} and ${this.alex.project.name} has been removed.`);
           })
           .catch(console.error);
+      },
+
+      onIssueDeleted(event) {
+        const i = this.messages.issues.findIndex(e => e.id === event.id);
+        if (i > -1) this.messages.issues.splice(i, 1);
       }
     }
   };

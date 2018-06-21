@@ -64,4 +64,11 @@ public class IssueEventService {
                 .execute();
     }
 
+    @Transactional
+    public int deleteById(final int eventId) {
+        return dsl.delete(ISSUE_EVENT)
+                .where(ISSUE_EVENT.ID.eq(eventId))
+                .execute();
+    }
+
 }

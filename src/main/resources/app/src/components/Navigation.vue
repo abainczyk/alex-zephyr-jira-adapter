@@ -27,20 +27,6 @@
             <router-link :to="{name: 'settings'}" class="nav-link" active-class="active" exact>Settings</router-link>
           </li>
         </ul>
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a
-                href="#"
-                class="nav-link"
-                @click.prevent="synchronize()"
-                v-b-tooltip.hover
-                title="Synchronize"
-                placement="left"
-            >
-              <font-awesome-icon icon="sync" :spin="synchronizing"></font-awesome-icon>
-            </a>
-          </li>
-        </ul>
       </div>
     </div>
   </nav>
@@ -48,15 +34,13 @@
 
 <script>
   import {projectService} from '../services/project.service';
-  import {syncApi} from '../services/apis/sync-api';
 
   export default {
     name: 'jzd-navigation',
     data() {
       return {
         subscriptions: [],
-        projectMapping: null,
-        synchronizing: false
+        projectMapping: null
       };
     },
     created() {
@@ -65,20 +49,6 @@
     },
     destroyed() {
       this.subscriptions.forEach(sub => sub.unsubscribe());
-    },
-    methods: {
-      synchronize() {
-        this.synchronizing = true;
-        syncApi.sync()
-          .then(() => {
-            this.$toasted.success('Synchronization complete. Please reload the window.');
-            this.synchronizing = false;
-          })
-          .catch(() => {
-            this.$toasted.success('Synchronization failed.');
-            this.synchronizing = false;
-          });
-      }
     }
   };
 </script>
