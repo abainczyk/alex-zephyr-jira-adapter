@@ -28,8 +28,8 @@
 <script>
   import axios from 'axios';
   import {apiUrl} from '../../environments';
-  import {alexProjectApi} from '../../services/apis/alex/alex-project-api';
-  import {projectMappingApi} from '../../services/apis/project-mapping-api';
+  import {alexProjectApi} from '../../apis/alex/alex-project-api';
+  import {projectMappingApi} from '../../apis/project-mapping-api';
 
   export default {
     name: 'jzd-test-execute-modal',

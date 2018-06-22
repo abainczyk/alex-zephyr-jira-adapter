@@ -59,21 +59,14 @@
       There are no test in this project.
     </div>
 
-    <jzd-test-mapping-setup-modal
-        ref="testMappingSetupModal"
-        v-on:close="handleMappingCreated"
-    >
-    </jzd-test-mapping-setup-modal>
+    <jzd-test-mapping-setup-modal ref="testMappingSetupModal"></jzd-test-mapping-setup-modal>
 
     <jzd-test-execute-modal ref="testExecuteModal"></jzd-test-execute-modal>
   </div>
 </template>
 
 <script>
-  import Vue from 'vue';
-  import {projectService} from '../services/project.service';
-  import {testMappingApi} from '../services/apis/test-mapping-api';
-  import {jiraTestApi} from '../services/apis/jira/jira-test-api';
+  import {jiraTestApi} from '../apis/jira/jira-test-api';
 
   export default {
     name: 'jzd-test-list',
@@ -82,16 +75,8 @@
         default: () => []
       },
       testMappingsMap: {
-        default: () => {
-        }
+        default: () => ({})
       }
-    },
-    data() {
-      return {
-        projectId: null,
-        projectMapping: null,
-        subscriptions: []
-      };
     },
     computed: {
       sortedTests() {
@@ -100,18 +85,10 @@
           if (a.fields.summary > b.fields.summary) return 1;
           return 0;
         });
+      },
+      projectMapping() {
+        return this.$store.state.projectMappings.currentProjectMapping;
       }
-    },
-    created() {
-      this.projectId = this.$route.params.projectId;
-
-      const sub = projectService.currentProjectMapping$.subscribe((mapping) => {
-        this.projectMapping = mapping;
-      });
-      this.subscriptions.push(sub);
-    },
-    destroyed() {
-      this.subscriptions.forEach(s => s.unsubscribe());
     },
     methods: {
       executeTest(test) {
@@ -119,8 +96,8 @@
       },
 
       updateTest(test) {
-        jiraTestApi.update(this.projectId, test.id)
-          .then(res => {
+        jiraTestApi.update(this.projectMapping.jiraProjectId, test.id)
+          .then(() => {
             this.$toasted.success('The test has been updated in Jira');
             this.testMappingsMap[test.id].updates = 0;
           })
@@ -140,18 +117,14 @@
         this.$refs.testMappingSetupModal.open(testMapping);
       },
 
-      handleMappingCreated(mapping) {
-        Vue.set(this.testMappingsMap, mapping.jiraTestId, mapping);
-      },
-
       removeMapping(test) {
-        testMappingApi.delete(test.fields.project.id, test.id)
-          .then(() => {
-            this.$toasted.success('The mapping has been removed for this test.');
-            this.testMappingsMap[test.id] = null;
-          })
+        const jiraProjectId = test.fields.project.id;
+        const jiraTestId = test.id;
+
+        this.$store.dispatch('testMappings/remove', {jiraProjectId, jiraTestId})
+          .then(() => this.$toasted.success('The mapping has been removed for this test.'))
           .catch(console.error);
-      },
+      }
     }
   };
 </script>

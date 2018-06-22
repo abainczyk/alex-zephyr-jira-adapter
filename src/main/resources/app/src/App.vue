@@ -5,18 +5,12 @@
 </template>
 
 <script>
+
+  /**
+   * The component that bootstraps the app.
+   */
   export default {
-    name: 'jzd-app',
-    created() {
-      // setupApi.get()
-      //   .then(response => {
-      //     const data = response.data;
-      //     if (!data.jira && !data.alex) {
-      //       this.$router.push('setup');
-      //     }
-      //   })
-      //   .catch(console.error);
-    }
+    name: 'jzd-app'
   };
 </script>
 

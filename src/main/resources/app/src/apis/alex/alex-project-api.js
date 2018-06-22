@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {apiUrl} from '../../../environments';
+import {apiUrl} from '../../environments';
 
 /**
  * Endpoints for managing projects in ALEX.

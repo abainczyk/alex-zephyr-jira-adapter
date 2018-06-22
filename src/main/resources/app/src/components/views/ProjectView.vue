@@ -1,21 +1,21 @@
 <template>
   <div>
     <div class="row">
-      <div class="col col-4">
+      <div class="col-sm-12 col-md-4">
 
         <router-link
-            :to="{name: 'tests', params: {id: jira.project.id}}"
+            :to="{name: 'tests', params: {id: jiraProject.id}}"
             class="btn btn-primary btn-block text-left mb-3"
-            v-if="jira.project != null"
+            v-if="jiraProject != null"
         >
           Edit tests
         </router-link>
 
-        <div v-if="jira.project != null && alex.project != null">
+        <div v-if="jiraProject != null && alexProject != null">
           <div class="card">
             <div class="card-body">
               <p>
-                <strong>{{jira.project.name}}</strong> is connected to <strong>{{alex.project.name}}</strong>.
+                <strong>{{jiraProject.name}}</strong> is connected to <strong>{{alexProject.name}}</strong>.
               </p>
               <a href="#" class="btn btn-sm btn-outline-secondary" @click.prevent="openConfirmModal()">
                 <font-awesome-icon icon="unlink"></font-awesome-icon>
@@ -26,81 +26,65 @@
         </div>
 
       </div>
-      <div class="col col-8">
+      <div class="col-sm-12 col-md-8 mt-sm-4 mt-md-0">
 
         <h5>Messages</h5>
         <hr>
 
-        <jzd-issue-event-list :events="messages.issues" @deleted="onIssueDeleted"></jzd-issue-event-list>
+        <jzd-issue-event-list :events="messages"></jzd-issue-event-list>
 
       </div>
     </div>
 
-    <jzd-confirm-modal ref="confirmModal" v-on:close="removeConnection()"></jzd-confirm-modal>
+    <jzd-confirm-modal ref="confirmModal" v-on:close="onSuccessFromConfirmModal()"></jzd-confirm-modal>
   </div>
 </template>
 
 <script>
-  import {jiraProjectApi} from '../../services/apis/jira/jira-project-api';
-  import {alexProjectApi} from '../../services/apis/alex/alex-project-api';
-  import {projectMappingApi} from '../../services/apis/project-mapping-api';
-  import {issueEventApi} from '../../services/apis/issue-event-api';
+  import {jiraProjectApi} from '../../apis/jira/jira-project-api';
+  import {alexProjectApi} from '../../apis/alex/alex-project-api';
 
   export default {
     name: 'jzd-project-view',
     data() {
       return {
-        mapping: null,
-        jira: {
-          project: null
-        },
-        alex: {
-          project: null
-        },
-        messages: {
-          issues: []
-        }
+        jiraProject: null,
+        alexProject: null
       };
     },
+    computed: {
+      messages() {
+        return this.$store.state.messages.messages;
+      },
+      projectMapping() {
+        return this.$store.state.projectMappings.currentProjectMapping;
+      }
+    },
     created() {
-      const projectId = this.$route.params.projectId;
-
-      jiraProjectApi.findOne(projectId)
-        .then(res => this.jira.project = res.data)
+      jiraProjectApi.findOne(this.projectMapping.jiraProjectId)
+        .then(res => this.jiraProject = res.data)
         .catch(console.error);
 
-      alexProjectApi.find()
-        .then(res => {
-          const projects = res.data;
-          return projectMappingApi.findOne(projectId)
-            .then((response) => {
-              const mapping = response.data;
-              this.alex.project = projects.find((p) => p.id === mapping.alexProjectId);
-            });
-        })
+      alexProjectApi.findOne(this.projectMapping.alexProjectId)
+        .then(res => this.alexProject = res.data)
         .catch(console.error);
 
-      issueEventApi.find(projectId)
-        .then(res => this.messages.issues = res.data)
+      this.$store.dispatch('messages/load', this.projectMapping.jiraProjectId)
         .catch(console.error);
     },
     methods: {
+
       openConfirmModal() {
         this.$refs.confirmModal.open('Do you want to remove the connection? All related data will be deleted as well.');
       },
 
-      removeConnection() {
-        projectMappingApi.delete(this.jira.project.id)
+      onSuccessFromConfirmModal() {
+        this.$store.dispatch('projectMappings/remove', this.jiraProject.id)
           .then(() => {
             this.$router.push('/app/projects');
-            this.$toasted.success(`The connection between ${this.jira.project.name} and ${this.alex.project.name} has been removed.`);
+            this.$toasted.success(`The connection between ${this.jiraProject.name} and ${this.alexProject.name} has been removed.`);
           })
           .catch(console.error);
-      },
-
-      onIssueDeleted(event) {
-        const i = this.messages.issues.findIndex(e => e.id === event.id);
-        if (i > -1) this.messages.issues.splice(i, 1);
       }
     }
   };

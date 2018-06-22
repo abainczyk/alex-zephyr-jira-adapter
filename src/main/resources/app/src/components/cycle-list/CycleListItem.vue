@@ -34,7 +34,7 @@
 </template>
 
 <script>
-  import {jiraCyclesApi} from '../../services/apis/jira/jira-cycles-api';
+  import {jiraCyclesApi} from '../../apis/jira/jira-cycles-api';
   import JzdCycleExecuteModal from '../modals/CycleExecuteModal';
 
   export default {

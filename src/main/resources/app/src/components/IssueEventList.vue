@@ -18,7 +18,7 @@
             </div>
           </div>
           <div>
-            <button class="btn btn-sm btn-light" @click="deleteEvent(event)">Ok</button>
+            <button class="btn btn-sm btn-light" @click="deleteMessage(event)">Ok</button>
           </div>
         </div>
       </div>
@@ -31,7 +31,6 @@
 
 <script>
   import moment from 'moment';
-  import {issueEventApi} from '../services/apis/issue-event-api';
 
   export default {
     name: 'jzd-issue-event-list',
@@ -42,15 +41,17 @@
       }
     },
     methods: {
+
       formatDate(timestamp) {
         return moment(timestamp).format('DD.mm.YYYY, LT');
       },
+
       formatDateFromNow(timestamp) {
         return moment(timestamp).fromNow();
       },
-      deleteEvent(event) {
-        issueEventApi.remove(event.projectId, event.id)
-          .then(() => this.$emit('deleted', event))
+
+      deleteMessage(message) {
+        this.$store.dispatch('messages/remove', message)
           .catch(console.error);
       }
     }

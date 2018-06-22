@@ -33,27 +33,24 @@
 </template>
 
 <script>
-  import {projectService} from '../services/project.service';
+  import {createNamespacedHelpers} from 'vuex';
 
+  const {mapState} = createNamespacedHelpers('projectMappings');
+
+  /**
+   * Component for the navigation bar.
+   */
   export default {
     name: 'jzd-navigation',
-    data() {
-      return {
-        subscriptions: [],
-        projectMapping: null
-      };
-    },
-    created() {
-      const sub = projectService.currentProjectMapping$.subscribe(mapping => this.projectMapping = mapping);
-      this.subscriptions.push(sub);
-    },
-    destroyed() {
-      this.subscriptions.forEach(sub => sub.unsubscribe());
+    computed: {
+      ...mapState({
+        projectMapping: state => state.currentProjectMapping
+      })
     }
   };
 </script>
 
-<style lang="scss" scoped>
+<style scoped lang="scss">
   .nav-link {
     .active {
       font-weight: 500;

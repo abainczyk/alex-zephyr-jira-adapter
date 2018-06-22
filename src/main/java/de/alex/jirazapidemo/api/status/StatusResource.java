@@ -16,6 +16,8 @@
 
 package de.alex.jirazapidemo.api.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.alex.jirazapidemo.alex.AlexEndpoints;
 import de.alex.jirazapidemo.alex.entities.AlexUserLogin;
 import de.alex.jirazapidemo.jira.JiraEndpoints;
@@ -49,6 +51,8 @@ public class StatusResource {
 
     private final Client client;
 
+    private final ObjectMapper objectMapper;
+
     @Autowired
     public StatusResource(JiraResource jiraResource,
                           JiraEndpoints jiraEndpoints,
@@ -58,6 +62,7 @@ public class StatusResource {
         this.alexEndpoints = alexEndpoints;
         this.settingsService = settingsService;
 
+        this.objectMapper = new ObjectMapper();
         this.client = ClientBuilder.newClient()
                 .property(ClientProperties.CONNECT_TIMEOUT, 3000)
                 .property(ClientProperties.READ_TIMEOUT, 3000);
@@ -67,7 +72,7 @@ public class StatusResource {
             method = RequestMethod.GET,
             value = RESOURCE_URL
     )
-    public ResponseEntity get() {
+    public ResponseEntity get() throws Exception {
         boolean connectedToJira = false;
         boolean authenticatedInJira = false;
         boolean connectedToAlex = false;
@@ -94,10 +99,8 @@ public class StatusResource {
 
         // check if ALEX is reachable
         try {
-            connectedToAlex = client.target(alexEndpoints.url())
-                    .request()
-                    .get()
-                    .getStatus() == 200;
+            client.target(alexEndpoints.url()).request().get();
+            connectedToAlex = true;
         } catch (Exception e) {
         }
 
@@ -118,11 +121,15 @@ public class StatusResource {
                 .header("Authorization", jiraResource.auth())
                 .get();
 
+        final JsonNode zapiStatus = objectMapper.readTree(response.readEntity(String.class));
+        final boolean zapiInError = zapiStatus.has("errorId");
+
         final String data = "{"
                 + "\"jira\":" + "{"
                 + "\"connected\": " + connectedToJira + ", \"authenticated\": " + authenticatedInJira + "},"
-                + "\"zapi\":" + response.readEntity(String.class) + ","
-                + "\"alex\":" + "{\"connected\": " + connectedToAlex + ", \"authenticated\": " + authenticatedInAlex + "}"
+                + "\"zapi\":" + zapiStatus.toString() + ","
+                + "\"alex\":" + "{\"connected\": " + connectedToAlex + ", \"authenticated\": " + authenticatedInAlex + "},"
+                + "\"errors\":" + (!connectedToJira || !authenticatedInJira || !connectedToAlex || !authenticatedInAlex || zapiInError)
                 + "}";
 
         return ResponseEntity.ok(data);

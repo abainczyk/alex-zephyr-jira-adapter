@@ -5,7 +5,7 @@
 <script>
 
   /**
-   * Dummy empty view component for better using child routes in the router.
+   * Dummy empty view component for using child routes in the router more easily.
    */
   export default {
     name: 'jzd-empty-view'

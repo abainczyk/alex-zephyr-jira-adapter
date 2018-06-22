@@ -10,11 +10,16 @@
     <div class="list-group">
       <a
           href="#"
-          class="list-group-item list-group-item-action"
+          class="list-group-item list-group-item-action d-flex flex-row"
           v-for="project in projects"
           @click.prevent="open(project)"
       >
-        {{project.name}}
+        <div class="w-100">
+          {{project.name}}
+        </div>
+        <div v-if="projectMappingsMap[project.id] != null">
+          <span class="badge badge-success">Mapped</span>
+        </div>
       </a>
     </div>
 
@@ -23,39 +28,46 @@
 </template>
 
 <script>
-  import {jiraProjectApi} from '../../services/apis/jira/jira-project-api';
-  import {projectMappingApi} from '../../services/apis/project-mapping-api';
-  import {projectService} from '../../services/project.service';
+  import {projectMappingApi} from '../../apis/project-mapping-api';
 
   export default {
     name: 'jzd-projects-view',
-    data() {
-      return {
-        projects: []
-      };
-    },
     created() {
-      jiraProjectApi.find()
-        .then(response => {
-          this.projects = response.data;
-        })
+      this.$store.dispatch('jira/projects/load')
         .catch(console.error);
+
+      this.$store.dispatch('projectMappings/load')
+        .catch(console.error);
+
+      this.$store.commit('projectMappings/setCurrent', null)
+    },
+    computed: {
+      projects() {
+        return this.$store.state.jira.projects.projects;
+      },
+      projectMappingsMap() {
+        const map = {};
+        this.$store.state.projectMappings.projectMappings.forEach(pm => map[pm.jiraProjectId] = pm);
+        return map;
+      }
     },
     methods: {
+
       open(project) {
         projectMappingApi.findOne(project.id)
           .then(res => {
             if (res.data === '') {
               this.$refs.configModal.open(project);
             } else {
-              projectService.setCurrentProjectMapping(res.data);
+              this.$store.commit('projectMappings/setCurrent', res.data);
               this.$router.push({name: 'project', params: {projectId: project.id}});
             }
           })
           .catch(console.error);
       },
+
       handleModalClose(mapping) {
-        projectService.setCurrentProjectMapping(mapping);
+        this.$store.commit('projectMappings/setCurrent', mapping);
         this.$router.push({name: 'project', params: {projectId: mapping.jiraProjectId}});
       }
     }
@@ -63,5 +75,4 @@
 </script>
 
 <style scoped>
-
 </style>

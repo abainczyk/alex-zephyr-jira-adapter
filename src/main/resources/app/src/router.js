@@ -6,52 +6,28 @@ import ProjectsView from './components/views/ProjectsView';
 import SettingsView from './components/views/SettingsView';
 import TestsView from './components/views/TestsView';
 import EmptyView from './components/views/EmptyView';
-import {projectService} from './services/project.service';
-import {projectMappingApi} from './services/apis/project-mapping-api';
+import {projectMappingApi} from './apis/project-mapping-api';
+import {store} from './stores/store';
 
 Vue.use(Router);
-
-/**
- * Guard that is executed before a projects related URL is opened.
- * Makes sure that the application settings are available in the app.
- *
- * @param {object} to
- *    The route that is should be navigated to.
- * @param {object} from
- *    The route that is navigated from.
- * @param {function(): *} next
- *    The callback for navigating to the 'to' route.
- */
-function beforeEnterProjects(to, from, next) {
-  next();
-  // if (settingsService.settings$.getValue() == null) {
-  //   settingsApi.get()
-  //     .then(res => {
-  //       settingsService.setSettings(res.data);
-  //       next();
-  //     });
-  // } else {
-  //   next();
-  // }
-}
 
 /**
  * Guard that is executed before a project related URL is opened.
  * Makes sure there is the project mapping that is defined as route parameter is in the store.
  *
- * @param {object} to
+ * @param {Object} to
  *    The route that is should be navigated to.
- * @param {object} from
+ * @param {Object} from
  *    The route that is navigated from.
  * @param {function(): *} next
  *    The callback for navigating to the 'to' route.
  */
 function beforeEnterProject(to, from, next) {
-  const projectId = to.params.projectId;
-  if (projectService.currentProjectMapping$.getValue() == null) {
+  if (store.state.projectMappings.currentProjectMapping == null) {
+    const projectId = to.params.projectId;
     projectMappingApi.findOne(projectId)
       .then(res => {
-        projectService.setCurrentProjectMapping(res.data);
+        store.commit('projectMappings/setCurrent', res.data);
         next();
       })
       .catch(console.error);
@@ -82,7 +58,6 @@ export default new Router({
         {
           path: 'projects',
           component: EmptyView,
-          beforeEnter: beforeEnterProjects,
           children: [
             {
               path: '',

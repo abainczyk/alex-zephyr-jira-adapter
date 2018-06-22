@@ -26,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class ProjectMappingResource {
 
@@ -36,6 +38,15 @@ public class ProjectMappingResource {
 
     @Autowired
     private IssueEventService issueEventService;
+
+    @RequestMapping(
+            method = RequestMethod.GET,
+            value = "/rest/projectMappings"
+    )
+    public ResponseEntity<List<ProjectMapping>> getAll() {
+        final List<ProjectMapping> mappings = projectMappingService.getAll();
+        return ResponseEntity.ok(mappings);
+    }
 
     @RequestMapping(
             method = RequestMethod.GET,

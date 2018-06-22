@@ -67,6 +67,16 @@ public class ProjectMappingService {
     }
 
     @Transactional
+    public List<ProjectMapping> getAll() {
+        return dsl.select()
+                .from(PROJECT_MAPPING)
+                .fetch()
+                .stream()
+                .map(r -> r.into(new ProjectMapping()))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public ProjectMapping getByJiraProjectId(final Long jiraProjectId) {
         final ProjectMappingRecord record = (ProjectMappingRecord) dsl.select()
                 .from(PROJECT_MAPPING)

@@ -19,29 +19,24 @@
 </template>
 
 <script>
-  import {syncApi} from '../../services/apis/sync-api';
+  import {syncApi} from '../../apis/sync-api';
 
+  /**
+   * Settings view.
+   */
   export default {
     name: 'jzd-settings-view',
-    data() {
-      return {
-        settings: null
-      };
-    },
     methods: {
+
+      /** Sync the tests and projects between ALEX and Jira. */
       sync() {
         syncApi.sync()
-          .then(() => {
-            this.$toasted.success('Synchronization complete.');
-          })
-          .catch(() => {
-            this.$toasted.error('Synchronization failed.');
-          });
+          .then(() => this.$toasted.success('Synchronization complete.'))
+          .catch(() => this.$toasted.error('Synchronization failed.'));
       }
     }
   };
 </script>
 
 <style scoped>
-
 </style>

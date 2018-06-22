@@ -83,5 +83,6 @@ Vue.component(TestTree.name, TestTree);
 
 new Vue({
   router,
+  store: require('./stores/store').store,
   render: h => h(App)
 }).$mount('#app');

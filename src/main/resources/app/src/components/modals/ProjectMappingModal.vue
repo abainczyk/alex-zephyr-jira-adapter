@@ -32,8 +32,7 @@
 </template>
 
 <script>
-  import {alexProjectApi} from '../../services/apis/alex/alex-project-api';
-  import {projectMappingApi} from '../../services/apis/project-mapping-api';
+  import {alexProjectApi} from '../../apis/alex/alex-project-api';
 
   export default {
     name: 'jzd-project-mapping-modal',
@@ -49,9 +48,7 @@
         this.project = project;
         this.$refs.modal.show();
         alexProjectApi.find()
-          .then(res => {
-            this.projects = res.data;
-          })
+          .then(res => this.projects = res.data)
           .catch(console.error);
       },
 
@@ -64,16 +61,15 @@
           return;
         }
 
-        const mapping = {
+        const projectMapping = {
           alexProjectId: this.selectedProject.id,
-          jiraProjectId: parseInt(this.project.id),
-          jiraProjectKey: this.project.key
+          jiraProjectId: this.project.id
         };
 
-        projectMappingApi.create(this.project.id, mapping)
+        this.$store.dispatch('projectMappings/create', projectMapping)
           .then(() => {
             this.$toasted.success(`The projects ${this.project.name} and ${this.selectedProject.name} have been connected.`);
-            this.$emit('close', mapping);
+            this.$emit('close', projectMapping);
             this.$refs.modal.hide();
           })
           .catch(console.error);

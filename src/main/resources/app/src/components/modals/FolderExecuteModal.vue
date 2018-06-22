@@ -26,9 +26,9 @@
 </template>
 
 <script>
-  import {alexProjectApi} from '../../services/apis/alex/alex-project-api';
-  import {projectMappingApi} from '../../services/apis/project-mapping-api';
-  import {jiraCyclesApi} from '../../services/apis/jira/jira-cycles-api';
+  import {alexProjectApi} from '../../apis/alex/alex-project-api';
+  import {projectMappingApi} from '../../apis/project-mapping-api';
+  import {jiraCyclesApi} from '../../apis/jira/jira-cycles-api';
 
   export default {
     name: 'jzd-folder-execute-modal',

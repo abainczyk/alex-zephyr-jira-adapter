@@ -9,11 +9,14 @@
 </template>
 
 <script>
+
+  /**
+   * The entry point component for the router.
+   */
   export default {
     name: 'jzd-app-view'
   };
 </script>
 
 <style scoped>
-
 </style>

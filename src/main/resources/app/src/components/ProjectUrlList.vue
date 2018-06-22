@@ -14,17 +14,34 @@
 </template>
 
 <script>
+
+  /**
+   * Component that displays a selectable list of URLs that are registered in ALEX to the current project.
+   */
   export default {
     name: 'jzd-project-url-list',
     props: {
+
+      /** The URLs in ALEX. */
       urls: {
+        type: Array,
         default: () => []
       },
+
+      /** The selected URL. */
       selectedUrl: {
+        type: Object,
         default: () => ({})
       }
     },
     methods: {
+
+      /**
+       * Select a URL from the list.
+       *
+       * @param {Object} url
+       *    The URL to select.
+       */
       selectUrl(url) {
         this.$emit('selected', url);
       }

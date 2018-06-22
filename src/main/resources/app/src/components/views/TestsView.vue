@@ -83,10 +83,8 @@
 </template>
 
 <script>
-  import {jiraTestApi} from '../../services/apis/jira/jira-test-api';
-  import {jiraCyclesApi} from '../../services/apis/jira/jira-cycles-api';
-  import {jiraVersionApi} from '../../services/apis/jira/jira-version-api';
-  import {testMappingApi} from '../../services/apis/test-mapping-api';
+  import {jiraCyclesApi} from '../../apis/jira/jira-cycles-api';
+  import {jiraVersionApi} from '../../apis/jira/jira-version-api';
 
   export default {
     name: 'jzd-tests-view',
@@ -94,9 +92,6 @@
       return {
         cycles: [],
         versionsMap: {},
-        tests: [],
-        testMappingsMap: {},
-        projectId: null,
         testFilters: {
           ALL: 0,
           MAPPED_ONLY: 1,
@@ -122,36 +117,48 @@
           default:
             return this.tests;
         }
+      },
+      tests() {
+        return this.$store.state.jira.tests.tests;
+      },
+      testMappingsMap() {
+        const map = {};
+        this.$store.state.testMappings.testMappings.forEach(tm => map[tm.jiraTestId] = tm);
+        return map;
+      },
+      projectId() {
+        return this.$store.state.projectMappings.currentProjectMapping.jiraProjectId;
       }
     },
     created() {
-      this.projectId = this.$route.params.projectId;
       this.activeTestFilter = this.testFilters.ALL;
 
       jiraVersionApi.find(this.projectId)
         .then(res => res.data.forEach(version => this.versionsMap[version.id] = version))
         .catch(console.error);
 
-      this.loadCycles();
       this.loadTests();
       this.loadTestMappings();
+      this.loadCycles();
     },
     methods: {
+
       loadTests() {
-        return jiraTestApi.find(this.projectId)
-          .then(res => this.tests = res.data.issues)
+        return this.$store.dispatch('jira/tests/load', this.projectId)
           .catch(console.error);
       },
+
       loadTestMappings() {
-        return testMappingApi.find(this.projectId)
-          .then(res => res.data.forEach(mapping => this.testMappingsMap[mapping.jiraTestId] = mapping))
+        return this.$store.dispatch('testMappings/load', this.projectId)
           .catch(console.error);
       },
+
       loadCycles() {
         return jiraCyclesApi.find(this.projectId)
           .then(res => this.cycles = res.data)
           .catch(console.error);
       },
+
       refreshTests() {
         this.refreshingTests = true;
         this.loadTests().then(() => {
@@ -161,6 +168,7 @@
           });
         });
       },
+
       refreshCycles() {
         this.refreshingCycles = true;
         this.loadCycles().then(() => {

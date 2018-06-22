@@ -6,14 +6,20 @@
     </div>
     <div class="pl-4">
       <div v-for="testSuite in testSuites">
-        <jzd-test-tree :test-suite="testSuite" :test-mappings-map="testMappingsMap"
-                       @selected="selectTestCase"></jzd-test-tree>
+        <jzd-test-tree
+            :test-suite="testSuite"
+            :test-mappings-map="testMappingsMap"
+            @selected="selectTestCase"
+        >
+        </jzd-test-tree>
       </div>
     </div>
     <div class="pl-4">
-      <div v-for="testCase in testCases" class="pl-1 pt-1 pb-1 d-flex flex-row"
-           :class="{'test-case': testMappingsMap[testCase.id] == null}"
-           @click="selectTestCase(testCase)">
+      <div
+          v-for="testCase in testCases" class="pl-1 pt-1 pb-1 d-flex flex-row"
+          :class="{'test-case': testMappingsMap[testCase.id] == null}"
+          @click="selectTestCase(testCase)"
+      >
         <div class="w-100 pr-1">
           <font-awesome-icon icon="file" fixed-width></font-awesome-icon>
           {{testCase.name}}

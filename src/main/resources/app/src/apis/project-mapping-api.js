@@ -1,10 +1,14 @@
 import axios from 'axios';
-import {apiUrl} from '../../environments';
+import {apiUrl} from '../environments';
 
 export class ProjectMappingApi {
 
   constructor() {
     this.url = (projectId) => `${apiUrl}/projects/${projectId}/mappings`;
+  }
+
+  find() {
+    return axios.get(`${apiUrl}/projectMappings`);
   }
 
   findOne(projectId) {

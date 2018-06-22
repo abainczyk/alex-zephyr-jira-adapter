@@ -41,8 +41,8 @@
 </template>
 
 <script>
-  import {testMappingApi} from '../../services/apis/test-mapping-api';
-  import {alexTestsApi} from '../../services/apis/alex/alex-tests-api';
+  import {testMappingApi} from '../../apis/test-mapping-api';
+  import {alexTestsApi} from '../../apis/alex/alex-tests-api';
 
   export default {
     name: 'jzd-test-mapping-setup-modal',
@@ -66,10 +66,7 @@
       createTestMapping() {
         this.errorMessage = null;
 
-        const projectId = this.testMapping.jiraProjectId;
-        const testId = this.testMapping.jiraTestId;
-
-        testMappingApi.create(projectId, testId, this.testMapping)
+        this.$store.dispatch('testMappings/create', this.testMapping)
           .then(res => {
             this.$toasted.success('The test has been created in ALEX.');
             this.close(res.data);
@@ -99,7 +96,7 @@
         const mapping = Object.assign({}, this.testMapping);
         mapping.alexTestId = testCase.id;
 
-        testMappingApi.create(mapping.jiraProjectId, mapping.jiraTestId, mapping)
+        this.$store.dispatch('testMappings/create', mapping)
           .then(res => {
             this.$toasted.success('The test has been created in ALEX.');
             this.close(res.data);

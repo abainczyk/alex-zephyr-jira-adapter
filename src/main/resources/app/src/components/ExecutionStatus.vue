@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import {executionApi} from '../services/apis/execution-api';
+  import {executionApi} from '../apis/execution-api';
 
   /**
    * Component that displays the current test execution progress.
@@ -47,18 +47,14 @@
     },
     methods: {
 
-      /**
-       * Get the testing status.
-       */
+      /** Get the testing status. */
       getStatus() {
         executionApi.getStatus()
           .then(res => this.status = res.data)
           .catch(console.error);
       },
 
-      /**
-       * Abort the testing process.
-       */
+      /** Abort the testing process. */
       abort() {
         executionApi.abort();
       }

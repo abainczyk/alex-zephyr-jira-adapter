@@ -1,5 +1,5 @@
 import axios from 'axios/index';
-import {apiUrl} from '../../../environments';
+import {apiUrl} from '../../environments';
 
 /**
  * Endpoints for managing tests in ALEX.
