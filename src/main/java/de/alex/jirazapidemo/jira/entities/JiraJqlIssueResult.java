@@ -32,5 +32,4 @@ public class JiraJqlIssueResult {
     public void setIssues(List<JiraIssue> issues) {
         this.issues = issues;
     }
-
 }

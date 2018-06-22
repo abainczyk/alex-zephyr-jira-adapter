@@ -106,5 +106,4 @@ public class AlexTestCase {
                 ", steps=" + steps +
                 '}';
     }
-
 }

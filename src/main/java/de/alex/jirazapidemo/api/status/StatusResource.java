@@ -130,5 +130,4 @@ public class StatusResource {
 
         return ResponseEntity.ok(data);
     }
-
 }

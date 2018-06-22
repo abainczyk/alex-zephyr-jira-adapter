@@ -46,7 +46,7 @@
       open(data) {
         this.data = data;
 
-        projectMappingApi.findOne(data.jiraProjectId)
+        projectMappingApi.findOneByJiraProjectId(data.jiraProjectId)
           .then(res => {
             return alexProjectApi.findOne(res.data.alexProjectId)
               .then(res => {
@@ -68,8 +68,7 @@
 
         this.data.alexUrlId = this.selectedUrl.id;
         axios.post(`${apiUrl}/executions`, this.data)
-          .then(response => {
-            console.log('execution:finished', response);
+          .then(() => {
             this.$toasted.success('The test process has been started.');
             this.dismiss();
           })

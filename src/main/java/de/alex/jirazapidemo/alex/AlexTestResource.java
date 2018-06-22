@@ -27,6 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.core.Response;
 
+/**
+ * Resource that works as a proxy to the REST API of ALEX for tests.
+ */
 @RestController
 public class AlexTestResource {
 
@@ -41,30 +44,13 @@ public class AlexTestResource {
         this.alexEndpoints = alexEndpoints;
     }
 
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = RESOURCE_URL
-    )
-    private ResponseEntity getAll(@PathVariable("projectId") Long projectId) {
-        log.info("Entering getAll(projectId: {})", projectId);
-        final Response res = alexEndpoints.testCases(projectId).get();
-
-        log.info("Leaving getAll() with status", res.getStatus());
-        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
-    }
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = RESOURCE_URL + "/{testId}"
-    )
-    private ResponseEntity get(@PathVariable("projectId") Long projectId, @PathVariable("testId") Long testId) {
-        log.info("Entering get(projectId: {})", projectId);
-        final Response res = alexEndpoints.test(projectId, testId).get();
-
-        log.info("Leaving get() with status", res.getStatus());
-        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
-    }
-
+    /**
+     * Get the root test suite that contains all other test suites and test cases.
+     *
+     * @param projectId
+     *         The ID of the ALEX project.
+     * @return The root test suite.
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             value = RESOURCE_URL + "/root"

@@ -44,7 +44,7 @@
       open(data) {
         this.data = data;
 
-        projectMappingApi.findOne(data.cycle.projectId)
+        projectMappingApi.findOneByJiraProjectId(data.cycle.projectId)
           .then(res => {
             return alexProjectApi.findOne(res.data.alexProjectId)
               .then(res => {

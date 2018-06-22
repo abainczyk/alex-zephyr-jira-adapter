@@ -87,14 +87,14 @@ const projectMappingsStore = {
         });
     },
     remove({commit}, jiraProjectId) {
-      return projectMappingApi.delete(jiraProjectId)
+      return projectMappingApi.deleteOneByJiraProjectId(jiraProjectId)
         .then(res => {
           commit('remove', jiraProjectId);
           return res;
         });
     },
     create({commit}, projectMapping) {
-      return projectMappingApi.create(projectMapping.jiraProjectId, projectMapping)
+      return projectMappingApi.create(projectMapping)
         .then(res => {
           commit('add', res.data);
           return res;

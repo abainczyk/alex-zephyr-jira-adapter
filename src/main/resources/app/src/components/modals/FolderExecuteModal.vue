@@ -45,7 +45,7 @@
         this.folder = folder;
         console.log(this.folder);
 
-        projectMappingApi.findOne(this.folder.projectId)
+        projectMappingApi.findOneByJiraProjectId(this.folder.projectId)
           .then(res => {
             return alexProjectApi.findOne(res.data.alexProjectId)
               .then(res => {

@@ -18,7 +18,10 @@ package de.alex.jirazapidemo.api.projectmappings;
 
 import de.alex.jirazapidemo.api.events.IssueEventService;
 import de.alex.jirazapidemo.db.h2.tables.pojos.ProjectMapping;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +34,9 @@ import java.util.List;
 @RestController
 public class ProjectMappingResource {
 
-    private static final String RESOURCE_URL = "/rest/projects/{projectId}/mappings";
+    private static final Logger log = LoggerFactory.getLogger(ProjectMappingResource.class);
+
+    private static final String RESOURCE_URL = "/rest/projectMappings";
 
     private final ProjectMappingService projectMappingService;
 
@@ -46,7 +51,7 @@ public class ProjectMappingResource {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/rest/projectMappings"
+            value = RESOURCE_URL
     )
     public ResponseEntity<List<ProjectMapping>> getAll() {
         final List<ProjectMapping> mappings = projectMappingService.getAll();
@@ -54,29 +59,29 @@ public class ProjectMappingResource {
     }
 
     @RequestMapping(
-            method = RequestMethod.GET,
-            value = RESOURCE_URL
-    )
-    public ResponseEntity<ProjectMapping> get(@PathVariable("projectId") final Long projectId) {
-        final ProjectMapping mapping = projectMappingService.getByJiraProjectId(projectId);
-        return mapping == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(mapping);
-    }
-
-    @RequestMapping(
             method = RequestMethod.POST,
             value = RESOURCE_URL
     )
-    public ResponseEntity<ProjectMapping> create(@PathVariable("projectId") final Long projectId,
-                                                 @RequestBody final ProjectMapping projectMapping) {
-        final ProjectMapping mapping = projectMappingService.createOrUpdate(projectMapping);
+    public ResponseEntity<ProjectMapping> create(@RequestBody final ProjectMapping projectMapping) {
+        final ProjectMapping mapping = projectMappingService.create(projectMapping);
         return ResponseEntity.ok(mapping);
     }
 
     @RequestMapping(
+            method = RequestMethod.GET,
+            value = RESOURCE_URL + "/byJiraProjectId/{projectId}"
+    )
+    public ResponseEntity<ProjectMapping> getByJiraProjectId(@PathVariable("projectId") final Long projectId) {
+        final ProjectMapping mapping = projectMappingService.getByJiraProjectId(projectId);
+        return mapping == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(mapping);
+    }
+
+    @RequestMapping(
             method = RequestMethod.DELETE,
-            value = RESOURCE_URL
+            value = RESOURCE_URL + "/byJiraProjectId/{projectId}"
     )
     public ResponseEntity<ProjectMapping> delete(@PathVariable("projectId") final Long projectId) {
+        log.info("Entering delete(projectId: {})", projectId);
         projectMappingService.deleteByJiraProjectId(projectId);
         issueEventService.deleteByProjectId(projectId);
         return ResponseEntity.noContent().build();

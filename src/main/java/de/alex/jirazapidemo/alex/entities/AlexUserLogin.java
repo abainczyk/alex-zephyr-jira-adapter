@@ -45,5 +45,4 @@ public class AlexUserLogin {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }

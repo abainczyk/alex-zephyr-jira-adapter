@@ -63,5 +63,4 @@ public class StepResult {
                 + ", comment='" + comment + '\''
                 + '}';
     }
-
 }

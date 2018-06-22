@@ -26,7 +26,6 @@ import de.alex.jirazapidemo.jira.JiraEndpoints;
 import de.alex.jirazapidemo.jira.entities.JiraIssue;
 import de.alex.jirazapidemo.jira.entities.JiraJqlIssueResult;
 import de.alex.jirazapidemo.jira.projects.JiraProject;
-import de.alex.jirazapidemo.services.SettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,9 +66,7 @@ public class SyncService {
     }
 
     private void syncProjects() {
-        log.info("synchronizing projects...");
-        log.info("check if all projects in ALEX still exist");
-
+        log.info("Entering syncProjects()");
         final List<Long> alexProjectIds = projectMappingService.getAllAlexProjectIds();
         if (alexProjectIds.size() > 0) {
             final Response res = alexEndpoints.projects().get();
@@ -83,14 +80,13 @@ public class SyncService {
                 // if the project id does not exists, delete everything related to the project.
                 alexProjectIds.forEach(id -> {
                     if (!ids.contains(id)) {
-                        log.info("delete by alex project: " + id);
+                        log.info("delete by ALEX project: {}", id);
                         projectMappingService.deleteByAlexProjectId(id);
                     }
                 });
             }
         }
 
-        log.info("check if all projects in Jira still exist.");
         final List<Long> jiraProjectIds = projectMappingService.getAllJiraProjectIds();
         if (jiraProjectIds.size() > 0) {
             final Response res = jiraEndpoints.projects().get();
@@ -104,19 +100,18 @@ public class SyncService {
                 // if the project id does not exists, delete everything related to the project.
                 jiraProjectIds.forEach(id -> {
                     if (!ids.contains(String.valueOf(id))) {
-                        log.info("delete by jira project: " + id);
+                        log.info("delete by Jira project: {}", id);
                         projectMappingService.deleteByJiraProjectId(id);
                     }
                 });
             }
         }
 
-        log.info("synchronization of projects completed\n");
+        log.info("Leaving syncProjects()");
     }
 
     private void syncTests() {
-        log.info("synchronizing tests...");
-        log.info("check if all tests in ALEX still exist");
+        log.info("Entering syncTests()");
 
         final List<Long> alexProjectIds = projectMappingService.getAllAlexProjectIds();
         for (Long projectId : alexProjectIds) {
@@ -134,14 +129,13 @@ public class SyncService {
 
                 alexTestIds.forEach(id -> {
                     if (!ids.contains(id)) {
-                        log.info("delete by alex test: " + id);
+                        log.info("delete by ALEX test: {}", id);
                         testMappingService.deleteAllByAlexTestId(id);
                     }
                 });
             }
         }
 
-        log.info("check if all tests in Jira still exist");
         final List<Long> jiraProjectIds = projectMappingService.getAllJiraProjectIds();
         for (Long projectId : jiraProjectIds) {
             final List<Long> jiraTestIds = testMappingService.findByJiraProjectId(projectId).stream()
@@ -158,14 +152,14 @@ public class SyncService {
 
                 jiraTestIds.forEach(id -> {
                     if (!ids.contains(id)) {
-                        log.info("delete by jira test: " + id);
+                        log.info("delete by Jira test: {}", id);
                         testMappingService.deleteAllByJiraTestId(id);
                     }
                 });
             }
         }
 
-        log.info("synchronization of tests completed\n");
+        log.info("Leaving syncTests()");
     }
 
 }

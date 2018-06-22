@@ -12,39 +12,11 @@ export class AlexTestsApi {
 
     /**
      * The URLs of the REST API.
-     * @type {{tests: function(number): string, test: function(number, number): string}}
+     * @type {{root: function(*): string}}
      */
     this.urls = {
-      tests: (projectId) => `${apiUrl}/alex/projects/${projectId}/tests`,
-      test: (projectId, testId) => `${apiUrl}/alex/projects/${projectId}/tests/${testId}`,
       root: (projectId) => `${apiUrl}/alex/projects/${projectId}/tests/root`
     };
-  }
-
-  /**
-   * Get all tests from ALEX.
-   *
-   * @param {number} projectId
-   *    The ID of the project.
-   * @return {AxiosPromise<any>}
-   *    The HTTP promise.
-   */
-  find(projectId) {
-    return axios.get(this.urls.tests(projectId));
-  }
-
-  /**
-   * Get a single test from ALEX.
-   *
-   * @param {number} projectId
-   *    The ID of the project.
-   * @param {number} testId
-   *    The ID of the test.
-   * @return {AxiosPromise<any>}
-   *    The HTTP promise.
-   */
-  findOne(projectId, testId) {
-    return axios.get(this.urls.test(projectId, testId));
   }
 
   /**

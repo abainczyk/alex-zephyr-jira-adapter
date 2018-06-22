@@ -54,5 +54,4 @@ public class AlexForJiraAdapter {
 
         return bean;
     }
-
 }

@@ -27,5 +27,4 @@ public class AlexJwt {
     public void setToken(String token) {
         this.token = token;
     }
-
 }

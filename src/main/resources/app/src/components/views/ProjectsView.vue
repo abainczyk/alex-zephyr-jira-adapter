@@ -12,7 +12,7 @@
           href="#"
           class="list-group-item list-group-item-action d-flex flex-row"
           v-for="project in projects"
-          @click.prevent="open(project)"
+          @click.prevent="openProject(project)"
       >
         <div class="w-100">
           {{project.name}}
@@ -23,13 +23,15 @@
       </a>
     </div>
 
-    <afj-project-mapping-modal ref="configModal" v-on:close="handleModalClose"></afj-project-mapping-modal>
+    <afj-project-mapping-modal ref="modal" v-on:close="onModalSuccess"></afj-project-mapping-modal>
   </div>
 </template>
 
 <script>
-  import {projectMappingApi} from '../../apis/project-mapping-api';
 
+  /**
+   * Component for the view that displays all projects in Jira and their mapping to a project in ALEX.
+   */
   export default {
     name: 'afj-projects-view',
     created() {
@@ -39,12 +41,16 @@
       this.$store.dispatch('projectMappings/load')
         .catch(console.error);
 
-      this.$store.commit('projectMappings/setCurrent', null)
+      this.$store.commit('projectMappings/setCurrent', null);
     },
     computed: {
+
+      /** All projects in Jira. */
       projects() {
         return this.$store.state.jira.projects.projects;
       },
+
+      /** The map (jiraProjectId -> projectMapping). Used for look ups. */
       projectMappingsMap() {
         const map = {};
         this.$store.state.projectMappings.projectMappings.forEach(pm => map[pm.jiraProjectId] = pm);
@@ -53,20 +59,28 @@
     },
     methods: {
 
-      open(project) {
-        projectMappingApi.findOne(project.id)
-          .then(res => {
-            if (res.data === '') {
-              this.$refs.configModal.open(project);
-            } else {
-              this.$store.commit('projectMappings/setCurrent', res.data);
-              this.$router.push({name: 'project', params: {projectId: project.id}});
-            }
-          })
-          .catch(console.error);
+      /**
+       * Opens a Jira project.
+       *
+       * @param {Object} project
+       *    The project to work with.
+       */
+      openProject(project) {
+        if (this.projectMappingsMap[project.id] == null) {
+          this.$refs.modal.open(project);
+        } else {
+          this.$store.commit('projectMappings/setCurrent', this.projectMappingsMap[project.id]);
+          this.$router.push({name: 'project', params: {projectId: project.id}});
+        }
       },
 
-      handleModalClose(mapping) {
+      /**
+       * Is called when the mapping has been created in the modal dialog.
+       *
+       * @param {Object} mapping
+       *    The created mapping.
+       */
+      onModalSuccess(mapping) {
         this.$store.commit('projectMappings/setCurrent', mapping);
         this.$router.push({name: 'project', params: {projectId: mapping.jiraProjectId}});
       }

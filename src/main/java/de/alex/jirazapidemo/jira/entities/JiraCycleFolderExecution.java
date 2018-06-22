@@ -22,6 +22,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JiraCycleFolderExecution {
+
     private List<JiraExecution> executions;
 
     public List<JiraExecution> getExecutions() {

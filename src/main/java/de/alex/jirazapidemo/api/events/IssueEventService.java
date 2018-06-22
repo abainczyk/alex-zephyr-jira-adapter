@@ -74,5 +74,4 @@ public class IssueEventService {
                 .where(ISSUE_EVENT.ID.eq(eventId))
                 .execute();
     }
-
 }

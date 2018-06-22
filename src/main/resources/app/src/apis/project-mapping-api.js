@@ -4,25 +4,24 @@ import {apiUrl} from '../environments';
 export class ProjectMappingApi {
 
   constructor() {
-    this.url = (projectId) => `${apiUrl}/projects/${projectId}/mappings`;
+    this.url = () => `${apiUrl}/projectMappings`;
   }
 
   find() {
-    return axios.get(`${apiUrl}/projectMappings`);
+    return axios.get(this.url());
   }
 
-  findOne(projectId) {
-    return axios.get(this.url(projectId));
+  findOneByJiraProjectId(projectId) {
+    return axios.get(`${this.url()}/byJiraProjectId/${projectId}`);
   }
 
-  delete(projectId) {
-    return axios.delete(this.url(projectId), null);
+  deleteOneByJiraProjectId(projectId) {
+    return axios.delete(`${this.url()}/byJiraProjectId/${projectId}`, null);
   }
 
-  create(projectId, mapping) {
-    return axios.post(this.url(projectId), mapping);
+  create(mapping) {
+    return axios.post(this.url(), mapping);
   }
-
 }
 
 export const projectMappingApi = new ProjectMappingApi();

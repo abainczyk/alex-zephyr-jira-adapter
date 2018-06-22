@@ -30,5 +30,4 @@ public class JiraIssueFields {
     public void setSummary(String summary) {
         this.summary = summary;
     }
-
 }

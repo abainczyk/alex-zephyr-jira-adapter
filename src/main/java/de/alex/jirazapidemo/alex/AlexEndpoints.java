@@ -86,32 +86,6 @@ public class AlexEndpoints {
     }
 
     /**
-     * Endpoint for symbols.
-     *
-     * @param projectId
-     *         The ID of the project.
-     * @return The builder for the request.
-     */
-    public Invocation.Builder symbols(Long projectId) {
-        return client.target(url() + "/projects/" + projectId + "/symbols")
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", auth());
-    }
-
-    /**
-     * Endpoint for symbol groups.
-     *
-     * @param projectId
-     *         The ID of the project.
-     * @return The builder for the request.
-     */
-    public Invocation.Builder symbolGroups(Long projectId) {
-        return client.target(url() + "/projects/" + projectId + "/groups?embed=symbols")
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", auth());
-    }
-
-    /**
      * Endpoint for all tests.
      *
      * @param projectId
@@ -152,6 +126,13 @@ public class AlexEndpoints {
                 .header("Authorization", auth());
     }
 
+    /**
+     * Endpoint for the root test suite.
+     *
+     * @param projectId
+     *         The ID of the project.
+     * @return The builder for the request.
+     */
     public Invocation.Builder rootTest(Long projectId) {
         return client.target(url() + "/projects/" + projectId + "/tests/root")
                 .request(MediaType.APPLICATION_JSON)
@@ -197,16 +178,29 @@ public class AlexEndpoints {
                 .header("Authorization", auth());
     }
 
+    /**
+     * Endpoint for webhooks.
+     *
+     * @return The builder for the request.
+     */
     public Invocation.Builder webhooks() {
         return client.target(url() + "/webhooks")
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", auth());
     }
 
+    /**
+     * Endpoint for handling multiple webhooks.
+     *
+     * @param webhookIds
+     *         The IDs of the webhooks.
+     * @return The builder for the request.
+     */
     public Invocation.Builder webhooksBatch(List<Long> webhookIds) {
         final String ids = String.join(",", webhookIds.stream()
                 .map(String::valueOf)
                 .collect(Collectors.toList()));
+
         return client.target(url() + "/webhooks/" + ids)
                 .request(MediaType.APPLICATION_JSON)
                 .header("Authorization", auth());
@@ -242,5 +236,4 @@ public class AlexEndpoints {
         token = "Bearer " + response.readEntity(AlexJwt.class).getToken();
         return token;
     }
-
 }

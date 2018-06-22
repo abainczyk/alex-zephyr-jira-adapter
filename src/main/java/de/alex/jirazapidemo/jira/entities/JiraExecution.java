@@ -20,9 +20,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JiraExecution {
+
     private Long id;
+
     private Long cycleId;
+
     private Long projectId;
+
     private Long issueId;
 
     public Long getId() {

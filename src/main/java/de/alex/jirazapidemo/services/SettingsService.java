@@ -69,5 +69,4 @@ public class SettingsService {
                 && !getAlexUrl().trim().equals("")
                 && !getAlexPassword().trim().equals("");
     }
-
 }

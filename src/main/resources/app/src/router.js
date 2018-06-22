@@ -25,7 +25,7 @@ Vue.use(Router);
 function beforeEnterProject(to, from, next) {
   if (store.state.projectMappings.currentProjectMapping == null) {
     const projectId = to.params.projectId;
-    projectMappingApi.findOne(projectId)
+    projectMappingApi.findOneByJiraProjectId(projectId)
       .then(res => {
         store.commit('projectMappings/setCurrent', res.data);
         next();

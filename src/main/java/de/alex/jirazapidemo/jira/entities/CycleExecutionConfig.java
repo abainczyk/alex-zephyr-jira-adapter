@@ -17,9 +17,13 @@
 package de.alex.jirazapidemo.jira.entities;
 
 public class CycleExecutionConfig {
+
     private Long projectId;
+
     private Long cycleId;
+
     private Long versionId;
+
     private Long urlId;
 
     public Long getProjectId() {
@@ -56,11 +60,11 @@ public class CycleExecutionConfig {
 
     @Override
     public String toString() {
-        return "CycleExecutionConfig{" +
-                "projectId=" + projectId +
-                ", cycleId=" + cycleId +
-                ", versionId=" + versionId +
-                ", urlId=" + urlId +
-                '}';
+        return "CycleExecutionConfig{"
+                + "projectId=" + projectId
+                + ", cycleId=" + cycleId
+                + ", versionId=" + versionId
+                + ", urlId=" + urlId
+                + '}';
     }
 }

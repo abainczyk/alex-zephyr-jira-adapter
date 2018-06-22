@@ -120,7 +120,6 @@ public class TestMappingService {
                 .set(TEST_MAPPING.UPDATES, TEST_MAPPING.UPDATES.add(1))
                 .where(TEST_MAPPING.ALEX_TEST_ID.eq(alexTestId))
                 .execute();
-
     }
 
     @Transactional

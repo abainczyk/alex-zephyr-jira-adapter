@@ -47,28 +47,12 @@ public class ProjectMappingService {
     }
 
     @Transactional
-    public ProjectMapping createOrUpdate(final ProjectMapping mapping) {
-        final Optional<Integer> optional = dsl.selectCount()
-                .from(PROJECT_MAPPING)
-                .where(PROJECT_MAPPING.JIRA_PROJECT_ID.eq(mapping.getJiraProjectId()))
-                .fetchOptionalInto(Integer.class);
-
-        if (optional.isPresent()) {
-            if (optional.get().equals(0)) {
-                dsl.insertInto(PROJECT_MAPPING, PROJECT_MAPPING.ALEX_PROJECT_ID, PROJECT_MAPPING.JIRA_PROJECT_ID)
-                        .values(mapping.getAlexProjectId(), mapping.getJiraProjectId())
-                        .execute();
-            } else {
-                dsl.update(PROJECT_MAPPING)
-                        .set(PROJECT_MAPPING.ALEX_PROJECT_ID, mapping.getAlexProjectId())
-                        .where(PROJECT_MAPPING.JIRA_PROJECT_ID.eq(mapping.getJiraProjectId()))
-                        .execute();
-            }
-
-            return getByJiraProjectId(mapping.getJiraProjectId());
-        }
-
-        return null;
+    public ProjectMapping create(final ProjectMapping mapping) {
+        return dsl.insertInto(PROJECT_MAPPING, PROJECT_MAPPING.ALEX_PROJECT_ID, PROJECT_MAPPING.JIRA_PROJECT_ID)
+                .values(mapping.getAlexProjectId(), mapping.getJiraProjectId())
+                .returning()
+                .fetchOne()
+                .into(new ProjectMapping());
     }
 
     @Transactional
