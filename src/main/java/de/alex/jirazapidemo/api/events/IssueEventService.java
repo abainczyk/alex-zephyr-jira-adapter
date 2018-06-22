@@ -28,11 +28,15 @@ import java.util.stream.Collectors;
 @Service
 public class IssueEventService {
 
-    @Autowired
-    private DSLContext dsl;
-
     private static final de.alex.jirazapidemo.db.h2.tables.IssueEvent ISSUE_EVENT
             = de.alex.jirazapidemo.db.h2.tables.IssueEvent.ISSUE_EVENT;
+
+    private final DSLContext dsl;
+
+    @Autowired
+    public IssueEventService(DSLContext dsl) {
+        this.dsl = dsl;
+    }
 
     @Transactional
     public List<IssueEvent> getByProjectId(final Long projectId) {

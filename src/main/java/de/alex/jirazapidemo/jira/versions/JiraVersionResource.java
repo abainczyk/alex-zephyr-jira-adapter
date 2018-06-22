@@ -16,7 +16,10 @@
 
 package de.alex.jirazapidemo.jira.versions;
 
-import de.alex.jirazapidemo.jira.JiraResource;
+import de.alex.jirazapidemo.jira.JiraEndpoints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,20 +28,39 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.core.Response;
 
+/**
+ * Resource for handling versions in Jira.
+ */
 @RestController
-public class JiraVersionResource extends JiraResource {
+public class JiraVersionResource {
 
-    private final String RESOURCE_URL = "/rest/jira/projects/{projectId}/versions";
+    private static final Logger log = LoggerFactory.getLogger(JiraVersionResource.class);
 
+    private static final String RESOURCE_URL = "/rest/jira/projects/{projectId}/versions";
+
+    private final JiraEndpoints jiraEndpoints;
+
+    @Autowired
+    public JiraVersionResource(JiraEndpoints jiraEndpoints) {
+        this.jiraEndpoints = jiraEndpoints;
+    }
+
+    /**
+     * Get all versions in Jira.
+     *
+     * @param projectId
+     *         The ID of the Jira project.
+     * @return
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             value = RESOURCE_URL
     )
-    public ResponseEntity getTestsByProjectId(@PathVariable("projectId") String projectId) {
-        final Response response = jiraEndpoints.versions(projectId).get();
+    public ResponseEntity getAll(@PathVariable("projectId") String projectId) {
+        log.info("Entering getAll(projectId: {})", projectId);
+        final Response res = jiraEndpoints.versions(projectId).get();
 
-        return ResponseEntity.status(response.getStatus())
-                .body(response.readEntity(String.class));
+        log.info("Leaving getAll() with status {}", res.getStatus());
+        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
     }
-
 }

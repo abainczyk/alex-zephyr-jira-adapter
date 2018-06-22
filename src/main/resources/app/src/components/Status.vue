@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <div class="status-bar py-2 text-right" v-if="status != null">
       <div class="container">
       <span class="status-pill mr-3">
@@ -27,6 +28,7 @@
         </span>
       </div>
     </div>
+
     <div class="message-wrapper d-flex" v-if="status != null && status.errors">
       <div class="message-box rounded p-4">
         <h6>Please fix the following issues in order to continue</h6>
@@ -62,6 +64,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 

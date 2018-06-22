@@ -17,41 +17,40 @@
 package de.alex.jirazapidemo.api.testmappings;
 
 import de.alex.jirazapidemo.alex.AlexEndpoints;
-import de.alex.jirazapidemo.alex.AlexResource;
 import de.alex.jirazapidemo.alex.entities.AlexTestCase;
 import de.alex.jirazapidemo.db.h2.tables.pojos.TestMapping;
 import de.alex.jirazapidemo.jira.JiraEndpoints;
-import de.alex.jirazapidemo.jira.JiraResource;
 import de.alex.jirazapidemo.jira.entities.JiraIssue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 @RestController
 public class TestMappingResource {
 
-    private final String RESOURCE_URL = "/rest/projects/{jiraProjectId}/tests/{jiraTestId}/mappings";
+    private static final String RESOURCE_URL = "/rest/projects/{jiraProjectId}/tests/{jiraTestId}/mappings";
+
+    private final TestMappingService testMappingService;
+
+    private final AlexEndpoints alexEndpoints;
+
+    private final JiraEndpoints jiraEndpoints;
 
     @Autowired
-    private TestMappingService testMappingService;
-
-    @Autowired
-    private AlexEndpoints alexEndpoints;
-
-    @Autowired
-    private JiraEndpoints jiraEndpoints;
+    public TestMappingResource(TestMappingService testMappingService,
+                               AlexEndpoints alexEndpoints,
+                               JiraEndpoints jiraEndpoints) {
+        this.testMappingService = testMappingService;
+        this.alexEndpoints = alexEndpoints;
+        this.jiraEndpoints = jiraEndpoints;
+    }
 
     @RequestMapping(
             method = RequestMethod.GET,

@@ -16,6 +16,9 @@
 
 package de.alex.jirazapidemo.alex;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,20 +28,29 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.ws.rs.core.Response;
 
 @RestController
-public class AlexTestResource extends AlexResource {
+public class AlexTestResource {
+
+    private static final Logger log = LoggerFactory.getLogger(AlexTestResource.class);
 
     private final String RESOURCE_URL = "/rest/alex/projects/{projectId}/tests";
+
+    private final AlexEndpoints alexEndpoints;
+
+    @Autowired
+    public AlexTestResource(AlexEndpoints alexEndpoints) {
+        this.alexEndpoints = alexEndpoints;
+    }
 
     @RequestMapping(
             method = RequestMethod.GET,
             value = RESOURCE_URL
     )
     private ResponseEntity getAll(@PathVariable("projectId") Long projectId) {
-        final Response response = alexEndpoints.testCases(projectId).get();
+        log.info("Entering getAll(projectId: {})", projectId);
+        final Response res = alexEndpoints.testCases(projectId).get();
 
-        return ResponseEntity
-                .status(response.getStatus())
-                .body(response.readEntity(String.class));
+        log.info("Leaving getAll() with status", res.getStatus());
+        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
     }
 
     @RequestMapping(
@@ -46,11 +58,11 @@ public class AlexTestResource extends AlexResource {
             value = RESOURCE_URL + "/{testId}"
     )
     private ResponseEntity get(@PathVariable("projectId") Long projectId, @PathVariable("testId") Long testId) {
-        final Response response = alexEndpoints.test(projectId, testId).get();
+        log.info("Entering get(projectId: {})", projectId);
+        final Response res = alexEndpoints.test(projectId, testId).get();
 
-        return ResponseEntity
-                .status(response.getStatus())
-                .body(response.readEntity(String.class));
+        log.info("Leaving get() with status", res.getStatus());
+        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
     }
 
     @RequestMapping(
@@ -58,10 +70,10 @@ public class AlexTestResource extends AlexResource {
             value = RESOURCE_URL + "/root"
     )
     private ResponseEntity getRoot(@PathVariable("projectId") Long projectId) {
-        final Response response = alexEndpoints.rootTest(projectId).get();
+        log.info("Entering getRoot(projectId: {})", projectId);
+        final Response res = alexEndpoints.rootTest(projectId).get();
 
-        return ResponseEntity
-                .status(response.getStatus())
-                .body(response.readEntity(String.class));
+        log.info("Leaving getRoot() with status {}", res.getStatus());
+        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
     }
 }

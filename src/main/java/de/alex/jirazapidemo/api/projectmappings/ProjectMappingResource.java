@@ -31,13 +31,18 @@ import java.util.List;
 @RestController
 public class ProjectMappingResource {
 
-    private final String RESOURCE_URL = "/rest/projects/{projectId}/mappings";
+    private static final String RESOURCE_URL = "/rest/projects/{projectId}/mappings";
+
+    private final ProjectMappingService projectMappingService;
+
+    private final IssueEventService issueEventService;
 
     @Autowired
-    private ProjectMappingService projectMappingService;
-
-    @Autowired
-    private IssueEventService issueEventService;
+    public ProjectMappingResource(ProjectMappingService projectMappingService,
+                                  IssueEventService issueEventService) {
+        this.projectMappingService = projectMappingService;
+        this.issueEventService = issueEventService;
+    }
 
     @RequestMapping(
             method = RequestMethod.GET,

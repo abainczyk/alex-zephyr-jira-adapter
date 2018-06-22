@@ -17,7 +17,8 @@
 package de.alex.jirazapidemo.jira.projects;
 
 import de.alex.jirazapidemo.jira.JiraEndpoints;
-import de.alex.jirazapidemo.jira.JiraResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,23 +29,29 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.ws.rs.core.Response;
 
 @RestController
-public class JiraProjectResource extends JiraResource {
+public class JiraProjectResource {
 
-    private final String RESOURCE_URL = "/rest/jira/projects";
+    private static final Logger log = LoggerFactory.getLogger(JiraProjectResource.class);
+
+    private static final String RESOURCE_URL = "/rest/jira/projects";
+
+    private final JiraEndpoints jiraEndpoints;
 
     @Autowired
-    private JiraEndpoints jiraEndpoints;
+    public JiraProjectResource(JiraEndpoints jiraEndpoints) {
+        this.jiraEndpoints = jiraEndpoints;
+    }
 
     @RequestMapping(
             method = RequestMethod.GET,
             value = RESOURCE_URL
     )
     public ResponseEntity getAll() {
-        final Response response = jiraEndpoints.projects().get();
+        log.info("Entering getAll()");
+        final Response res = jiraEndpoints.projects().get();
 
-        return ResponseEntity
-                .status(response.getStatus())
-                .body(response.readEntity(String.class));
+        log.info("Leaving getAll() with status {}", res.getStatus());
+        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
     }
 
     @RequestMapping(
@@ -52,11 +59,10 @@ public class JiraProjectResource extends JiraResource {
             value = RESOURCE_URL + "/{projectId}"
     )
     public ResponseEntity get(@PathVariable("projectId") String projectId) {
-        final Response response = jiraEndpoints.project(projectId).get();
+        log.info("Entering get(projectId: {})", projectId);
+        final Response res = jiraEndpoints.project(projectId).get();
 
-        return ResponseEntity
-                .status(response.getStatus())
-                .body(response.readEntity(String.class));
+        log.info("Leaving get(projectId: {}) with status {}", projectId, res.getStatus());
+        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
     }
-
 }

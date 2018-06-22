@@ -32,14 +32,19 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectMappingService {
 
-    @Autowired
-    private DSLContext dsl;
-
-    @Autowired
-    private TestMappingService testMappingService;
-
     private static final de.alex.jirazapidemo.db.h2.tables.ProjectMapping PROJECT_MAPPING
             = de.alex.jirazapidemo.db.h2.tables.ProjectMapping.PROJECT_MAPPING;
+
+    private final DSLContext dsl;
+
+    private final TestMappingService testMappingService;
+
+    @Autowired
+    public ProjectMappingService(DSLContext dsl,
+                                 TestMappingService testMappingService) {
+        this.dsl = dsl;
+        this.testMappingService = testMappingService;
+    }
 
     @Transactional
     public ProjectMapping createOrUpdate(final ProjectMapping mapping) {

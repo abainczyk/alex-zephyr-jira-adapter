@@ -34,13 +34,13 @@ import java.text.SimpleDateFormat;
 @RestController
 public class WebhookResource {
 
-    private final String RESOURCE_URL = "/rest/wh";
+    private static final String RESOURCE_URL = "/rest/wh";
 
-    private IssueEventService issueEventService;
+    private final IssueEventService issueEventService;
 
-    private ProjectMappingService projectMappingService;
+    private final ProjectMappingService projectMappingService;
 
-    private TestMappingService testMappingService;
+    private final TestMappingService testMappingService;
 
     private final ObjectMapper objectMapper;
 

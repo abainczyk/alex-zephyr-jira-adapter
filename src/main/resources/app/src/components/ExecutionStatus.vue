@@ -3,7 +3,8 @@
     <span class="badge badge-secondary p-2 mr-1" v-if="!status.active">Ready for testing</span>
     <div v-else>
       <span class="badge badge-primary p-2 mr-1">
-        <font-awesome-icon icon="circle-notch" spin fixed-width class="mr-1"></font-awesome-icon> Testing in progress
+        <font-awesome-icon icon="circle-notch" spin fixed-width class="mr-1"></font-awesome-icon>
+        Testing in progress
       </span>
       <span class="badge badge-info p-2 mr-1">
         {{status.inQueue}} left
@@ -14,6 +15,9 @@
 
 <script>
   import {executionApi} from '../apis/execution-api';
+
+  /** How often in ms we poll for the status of the test execution. */
+  const INTERVAL_TIME = 3000;
 
   /**
    * Component that displays the current test execution progress.
@@ -40,7 +44,7 @@
     },
     created() {
       this.getStatus();
-      this.intervalHandle = window.setInterval(() => this.getStatus(), 3000);
+      this.intervalHandle = window.setInterval(() => this.getStatus(), INTERVAL_TIME);
     },
     destroyed() {
       window.clearInterval(this.intervalHandle);

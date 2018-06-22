@@ -20,9 +20,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
+/**
+ * Utility class that allows access to the properties in the config file.
+ */
 @Service
 public class SettingsService {
 
+    /** The properties from the config file. */
     private Properties properties;
 
     public void setProperties(Properties properties) {
@@ -53,6 +57,11 @@ public class SettingsService {
         return properties.getProperty("alex.url");
     }
 
+    /**
+     * Check if the properties are valid.
+     *
+     * @return If all properties are valid.
+     */
     public boolean isValid() {
         return !getJiraUsername().trim().equals("")
                 && !getJiraUrl().trim().equals("")

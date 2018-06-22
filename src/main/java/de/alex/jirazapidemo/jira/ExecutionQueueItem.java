@@ -19,11 +19,36 @@ package de.alex.jirazapidemo.jira;
 import de.alex.jirazapidemo.db.h2.tables.pojos.TestMapping;
 import de.alex.jirazapidemo.jira.entities.JiraExecution;
 
+/**
+ * An item in the test execution queue.
+ */
 public class ExecutionQueueItem {
+
+    /**
+     * The Execution object from jira that is updated once the test in ALEX is executed.
+     */
     private JiraExecution execution;
+
+    /**
+     * The configuration that is used to execute the test in ALEX.
+     */
     private ExecutionConfig config;
+
+    /**
+     * The mapping between the tests.
+     */
     private TestMapping testMapping;
 
+    /**
+     * Constructor.
+     *
+     * @param execution
+     *         {@link #execution}.
+     * @param config
+     *         {@link #config}.
+     * @param testMapping
+     *         {@link #testMapping}.
+     */
     public ExecutionQueueItem(JiraExecution execution,
                               ExecutionConfig config,
                               TestMapping testMapping) {

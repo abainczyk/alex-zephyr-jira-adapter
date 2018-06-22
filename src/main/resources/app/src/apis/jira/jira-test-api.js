@@ -33,20 +33,6 @@ export class JiraTestApi {
     return axios.get(this.urls.tests(projectId));
   }
 
-  /**
-   * Get a single test from Jira.
-   *
-   * @param {number} projectId
-   *    The ID of the project.
-   * @param {number} testId
-   *    The ID of the test.
-   * @return {AxiosPromise<any>}
-   *    The HTTP promise.
-   */
-  findOne(projectId, testId) {
-    return axios.get(this.urls.test(projectId, testId));
-  }
-
   update(projectId, testId) {
     return axios.post(this.urls.update(projectId, testId), {});
   }

@@ -63,7 +63,7 @@ jira.password=
  
 The URLs have to be specified **without** trailing slash:
 
-Wrong:    *http://localhost:8080/* 
+Wrong:    *http://localhost:8080/* <br>
 Correct:  *http://localhost:8080*
 
 When starting the adapter, make sure you provide the config file via a command line argument, see below.

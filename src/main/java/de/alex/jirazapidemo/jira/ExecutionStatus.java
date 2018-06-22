@@ -16,10 +16,25 @@
 
 package de.alex.jirazapidemo.jira;
 
+/**
+ * The status of the current test execution.
+ */
 public class ExecutionStatus {
+
+    /** If tests are currently being executed. */
     private boolean active;
+
+    /** How many tests are in the queue. */
     private int inQueue;
 
+    /**
+     * Constructor.
+     *
+     * @param active
+     *         {@link #active}.
+     * @param inQueue
+     *         {@link #inQueue}.
+     */
     public ExecutionStatus(boolean active, int inQueue) {
         this.active = active;
         this.inQueue = inQueue;

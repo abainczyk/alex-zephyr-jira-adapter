@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+/** The main entry to the adapter. */
 @SpringBootApplication
 public class AlexForJiraAdapter {
 
@@ -35,7 +36,7 @@ public class AlexForJiraAdapter {
     /**
      * Allow requests from a all origins.
      *
-     * @return The bean.
+     * @return The bean that is registered in Spring.
      */
     @Bean
     public FilterRegistrationBean corsFilter() {

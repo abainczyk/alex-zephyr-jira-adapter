@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.alex.jirazapidemo.alex.AlexEndpoints;
 import de.alex.jirazapidemo.alex.entities.AlexUserLogin;
 import de.alex.jirazapidemo.jira.JiraEndpoints;
-import de.alex.jirazapidemo.jira.JiraResource;
 import de.alex.jirazapidemo.services.SettingsService;
 import org.glassfish.jersey.client.ClientProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,25 +38,22 @@ import javax.ws.rs.core.Response;
 @RestController
 public class StatusResource {
 
-    private final String RESOURCE_URL = "/rest/status";
+    private static final String RESOURCE_URL = "/rest/status";
 
-    private JiraResource jiraResource;
+    private final JiraEndpoints jiraEndpoints;
 
-    private JiraEndpoints jiraEndpoints;
+    private final AlexEndpoints alexEndpoints;
 
-    private AlexEndpoints alexEndpoints;
-
-    private SettingsService settingsService;
+    private final SettingsService settingsService;
 
     private final Client client;
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public StatusResource(JiraResource jiraResource,
-                          JiraEndpoints jiraEndpoints,
-                          AlexEndpoints alexEndpoints, SettingsService settingsService) {
-        this.jiraResource = jiraResource;
+    public StatusResource(JiraEndpoints jiraEndpoints,
+                          AlexEndpoints alexEndpoints,
+                          SettingsService settingsService) {
         this.jiraEndpoints = jiraEndpoints;
         this.alexEndpoints = alexEndpoints;
         this.settingsService = settingsService;
@@ -91,7 +87,7 @@ public class StatusResource {
         try {
             authenticatedInJira = client.target(jiraEndpoints.url() + "/api/2/user")
                     .request(MediaType.APPLICATION_JSON)
-                    .header("Authorization", jiraResource.auth())
+                    .header("Authorization", jiraEndpoints.auth())
                     .get()
                     .getStatus() != 401;
         } catch (Exception e) {
@@ -118,7 +114,7 @@ public class StatusResource {
         // check if the zapi add-on is enabled
         final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/moduleInfo")
                 .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", jiraResource.auth())
+                .header("Authorization", jiraEndpoints.auth())
                 .get();
 
         final JsonNode zapiStatus = objectMapper.readTree(response.readEntity(String.class));

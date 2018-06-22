@@ -32,24 +32,23 @@ import javax.ws.rs.core.MediaType;
 @RestController
 public class ExecutionResource {
 
+    private static final String RESOURCE_URL = "/rest/executions";
+
+    private final ExecutionService executionService;
+
     @Autowired
-    private ExecutionService executionService;
+    public ExecutionResource(ExecutionService executionService) {
+        this.executionService = executionService;
+    }
 
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/rest/executions"
+            value = RESOURCE_URL
     )
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity execute(@RequestBody ExecutionConfig config) {
         try {
-
-            // TODO
-            /*
-              check if length of test steps in both are identical
-              otherwise break and tell user to update
-             */
-
             executionService.executeTest(config);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -60,16 +59,16 @@ public class ExecutionResource {
 
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/rest/executions/status"
+            value = RESOURCE_URL + "/status"
     )
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity getStauts() {
+    public ResponseEntity getStatus() {
         return ResponseEntity.ok(executionService.getStatus());
     }
 
     @RequestMapping(
             method = RequestMethod.POST,
-            value = "/rest/executions/abort"
+            value = RESOURCE_URL + "/abort"
     )
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity abort() {

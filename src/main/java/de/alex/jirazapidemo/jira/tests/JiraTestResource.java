@@ -19,12 +19,9 @@ package de.alex.jirazapidemo.jira.tests;
 import de.alex.jirazapidemo.alex.AlexEndpoints;
 import de.alex.jirazapidemo.alex.entities.AlexTestCase;
 import de.alex.jirazapidemo.alex.entities.AlexTestCaseStep;
-import de.alex.jirazapidemo.api.projectmappings.ProjectMappingService;
 import de.alex.jirazapidemo.api.testmappings.TestMappingService;
-import de.alex.jirazapidemo.db.h2.tables.pojos.ProjectMapping;
 import de.alex.jirazapidemo.db.h2.tables.pojos.TestMapping;
 import de.alex.jirazapidemo.jira.JiraEndpoints;
-import de.alex.jirazapidemo.jira.JiraResource;
 import de.alex.jirazapidemo.jira.entities.JiraTestStep;
 import de.alex.jirazapidemo.utils.RestError;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,73 +34,38 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @RestController
-public class JiraTestResource extends JiraResource {
+public class JiraTestResource {
 
-    private final String RESOURCE_URL = "/rest/jira/projects/{projectId}/tests";
+    private static final String RESOURCE_URL = "/rest/jira/projects/{projectId}/tests";
 
-    @Autowired
-    private ProjectMappingService projectMappingService;
+    private final TestMappingService testMappingService;
 
-    @Autowired
-    private TestMappingService testMappingService;
+    private final AlexEndpoints alexEndpoints;
 
-    @Autowired
-    private AlexEndpoints alexEndpoints;
+    private final JiraEndpoints jiraEndpoints;
 
     @Autowired
-    private JiraEndpoints jiraEndpoints;
+    public JiraTestResource(TestMappingService testMappingService,
+                            AlexEndpoints alexEndpoints,
+                            JiraEndpoints jiraEndpoints) {
+        this.testMappingService = testMappingService;
+        this.alexEndpoints = alexEndpoints;
+        this.jiraEndpoints = jiraEndpoints;
+    }
 
     @RequestMapping(
             method = RequestMethod.GET,
             value = RESOURCE_URL
     )
-    public String getTestsByProjectId(@PathVariable("projectId") Long projectId) throws Exception {
-        final ProjectMapping mapping = projectMappingService.getByJiraProjectId(projectId);
-
-        final Response response = client.target(jiraEndpoints.url() + "/api/2/search?jql=" + URLEncoder.encode("project = " + mapping.getJiraProjectId() + " AND issuetype = Test", "UTF-8"))
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", auth())
-                .get();
-
-        return response.readEntity(String.class);
-    }
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = RESOURCE_URL + "/{testId}"
-    )
-    public String getTestById(@PathVariable("projectId") Long projectId,
-                              @PathVariable("testId") Long testId) throws Exception {
-        final ProjectMapping mapping = projectMappingService.getByJiraProjectId(projectId);
-
-        final Response response = client.target(jiraEndpoints.url() + "/api/2/search?jql=" + URLEncoder.encode("project = " + mapping.getJiraProjectId() + " AND issuetype = Test AND id = " + testId, "UTF-8"))
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", auth())
-                .get();
-
-        return response.readEntity(String.class);
-    }
-
-    @RequestMapping(
-            method = RequestMethod.GET,
-            value = RESOURCE_URL + "/{testId}/steps"
-    )
-    public String getTestStepsByProjectIdAndTestId(@PathVariable("projectId") Long projectId,
-                                                   @PathVariable("testId") Long testId) {
-        final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/teststep/" + testId)
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", auth())
-                .get();
-
-        return response.readEntity(String.class);
+    public ResponseEntity getTestsByProjectId(@PathVariable("projectId") Long projectId) {
+        final Response response = jiraEndpoints.tests(projectId).get();
+        return ResponseEntity.status(response.getStatus()).body(response.readEntity(String.class));
     }
 
     @RequestMapping(

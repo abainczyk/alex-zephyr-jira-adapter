@@ -19,7 +19,6 @@ package de.alex.jirazapidemo.jira.cycles;
 import de.alex.jirazapidemo.jira.ExecutionConfig;
 import de.alex.jirazapidemo.jira.ExecutionService;
 import de.alex.jirazapidemo.jira.JiraEndpoints;
-import de.alex.jirazapidemo.jira.JiraResource;
 import de.alex.jirazapidemo.jira.entities.CycleExecutionConfig;
 import de.alex.jirazapidemo.jira.entities.FolderExecutionConfig;
 import de.alex.jirazapidemo.jira.entities.JiraCycleFolder;
@@ -35,21 +34,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class JiraCycleResource extends JiraResource {
+public class JiraCycleResource {
 
     private static final String RESOURCE_URL = "/rest/jira/cycles";
 
-    @Autowired
-    private JiraEndpoints jiraEndpoints;
+    private final JiraEndpoints jiraEndpoints;
+
+    private final ExecutionService executionService;
 
     @Autowired
-    private ExecutionService executionService;
+    public JiraCycleResource(JiraEndpoints jiraEndpoints, ExecutionService executionService) {
+        this.jiraEndpoints = jiraEndpoints;
+        this.executionService = executionService;
+    }
 
     @RequestMapping(
             method = RequestMethod.GET,
@@ -70,10 +72,7 @@ public class JiraCycleResource extends JiraResource {
     public ResponseEntity getFolders(@PathVariable Long cycleId,
                                      @RequestParam("projectId") Long projectId,
                                      @RequestParam("versionId") Long versionId) {
-        final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/cycle/" + cycleId + "/folders?projectId=" + projectId + "&versionId=" + versionId)
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", auth())
-                .get();
+        final Response response = jiraEndpoints.folders(projectId, versionId, cycleId).get();
 
         return ResponseEntity
                 .status(response.getStatus())
@@ -88,10 +87,7 @@ public class JiraCycleResource extends JiraResource {
                                            @PathVariable Long folderId,
                                            @RequestParam("projectId") Long projectId,
                                            @RequestParam("versionId") Long versionId) {
-        final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + projectId + "&versionId=" + versionId + "&folderId=" + folderId + "&offset=0&sorter=OrderId:ASC")
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", auth())
-                .get();
+        final Response response = jiraEndpoints.testsByFolder(projectId, versionId, cycleId, folderId).get();
 
         return ResponseEntity
                 .status(response.getStatus())
@@ -106,34 +102,14 @@ public class JiraCycleResource extends JiraResource {
                                        @RequestBody CycleExecutionConfig config) {
 
         new Thread(() -> {
-            final Response res1 = client.target(jiraEndpoints.url() + "/zapi/latest/cycle/" + cycleId + "/folders?projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId())
-                    .request(MediaType.APPLICATION_JSON)
-                    .header("Authorization", auth())
-                    .get();
-
+            final Response res1 = jiraEndpoints.folders(config.getProjectId(), config.getVersionId(), cycleId).get();
             final ArrayList<JiraCycleFolder> folders = res1.readEntity(new GenericType<ArrayList<JiraCycleFolder>>() {
             });
 
             for (final JiraCycleFolder folder : folders) {
-                final Response res2 = client.target(jiraEndpoints.url() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId() + "&folderId=" + folder.getFolderId() + "&offset=0&sorter=OrderId:ASC")
-                        .request(MediaType.APPLICATION_JSON)
-                        .header("Authorization", auth())
-                        .get();
-
+                final Response res2 = jiraEndpoints.testsByFolder(config.getProjectId(), config.getVersionId(), cycleId, folder.getFolderId()).get();
                 final List<JiraExecution> executions = res2.readEntity(JiraCycleFolderExecution.class).getExecutions();
-
-                for (JiraExecution execution : executions) {
-                    final ExecutionConfig executionConfig = new ExecutionConfig();
-                    executionConfig.setJiraProjectId(config.getProjectId());
-                    executionConfig.setJiraTestId(execution.getIssueId());
-                    executionConfig.setAlexUrlId(config.getUrlId());
-
-                    try {
-                        executionService.executeTest(executionConfig, execution);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                executeTests(executions, config);
             }
         }).start();
 
@@ -149,27 +125,26 @@ public class JiraCycleResource extends JiraResource {
                                         @RequestBody FolderExecutionConfig config) {
 
         new Thread(() -> {
-            final Response res2 = client.target(jiraEndpoints.url() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + config.getProjectId() + "&versionId=" + config.getVersionId() + "&folderId=" + config.getFolderId() + "&offset=0&sorter=OrderId:ASC")
-                    .request(MediaType.APPLICATION_JSON)
-                    .header("Authorization", auth())
-                    .get();
-
-            final List<JiraExecution> executions = res2.readEntity(JiraCycleFolderExecution.class).getExecutions();
-
-            for (JiraExecution execution : executions) {
-                final ExecutionConfig executionConfig = new ExecutionConfig();
-                executionConfig.setJiraProjectId(config.getProjectId());
-                executionConfig.setJiraTestId(execution.getIssueId());
-                executionConfig.setAlexUrlId(config.getUrlId());
-
-                try {
-                    executionService.executeTest(executionConfig, execution);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            final Response res = jiraEndpoints.testsByFolder(config.getProjectId(), config.getVersionId(), cycleId, folderId).get();
+            final List<JiraExecution> executions = res.readEntity(JiraCycleFolderExecution.class).getExecutions();
+            executeTests(executions, config);
         }).start();
 
         return ResponseEntity.ok().build();
+    }
+
+    private void executeTests(List<JiraExecution> executions, CycleExecutionConfig config) {
+        for (JiraExecution execution : executions) {
+            final ExecutionConfig executionConfig = new ExecutionConfig();
+            executionConfig.setJiraProjectId(config.getProjectId());
+            executionConfig.setJiraTestId(execution.getIssueId());
+            executionConfig.setAlexUrlId(config.getUrlId());
+
+            try {
+                executionService.executeTest(executionConfig, execution);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

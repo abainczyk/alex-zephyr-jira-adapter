@@ -33,19 +33,32 @@
 </template>
 
 <script>
+
+  /**
+   * Component that displays all test suites and test cases in ALEX in a tree.
+   */
   export default {
     name: 'afj-test-tree',
     props: {
+
+      /** The map (alexTestId -> testMapping) */
       testMappingsMap: {
         type: Object,
         default: () => ({})
       },
+
+      /** The current test suite. */
       testSuite: {
         type: Object,
         default: () => null
       }
     },
     computed: {
+
+      /**
+       * Get all test cases in the current test suite, sorted alphabetically.
+       * @return {Object[]}
+       */
       testCases() {
         return this.testSuite.tests.filter(t => t.type === 'case').sort((a, b) => {
           if (a.name < b.name) return -1;
@@ -54,6 +67,10 @@
         });
       },
 
+      /**
+       * Get all test suites in the current test suite, sorted alphabetically.
+       * @return {Object[]}
+       */
       testSuites() {
         return this.testSuite.tests.filter(t => t.type === 'suite').sort((a, b) => {
           if (a.name < b.name) return -1;
@@ -63,8 +80,17 @@
       }
     },
     methods: {
+
+      /**
+       * Select a test case from the tree.
+       *
+       * @param {Object} testCase
+       *    The selected test case.
+       */
       selectTestCase(testCase) {
-        this.$emit('selected', testCase);
+        if (this.testMappingsMap[testCase.id] == null) {
+          this.$emit('selected', testCase);
+        }
       }
     }
   };
@@ -75,7 +101,6 @@
     &:hover {
       background: #f2f2f2;
       cursor: pointer;
-
     }
   }
 </style>

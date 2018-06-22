@@ -28,11 +28,15 @@ import java.util.List;
 @Service
 public class TestMappingService {
 
-    @Autowired
-    private DSLContext dsl;
-
     private static final de.alex.jirazapidemo.db.h2.tables.TestMapping TEST_MAPPING
             = de.alex.jirazapidemo.db.h2.tables.TestMapping.TEST_MAPPING;
+
+    private final DSLContext dsl;
+
+    @Autowired
+    public TestMappingService(DSLContext dsl) {
+        this.dsl = dsl;
+    }
 
     @Transactional
     public TestMapping findOneByJiraProjectIdAndJiraTestId(Long jiraProjectId, Long jiraTestId) {

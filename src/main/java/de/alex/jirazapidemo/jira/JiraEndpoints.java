@@ -17,6 +17,7 @@
 package de.alex.jirazapidemo.jira;
 
 import de.alex.jirazapidemo.services.SettingsService;
+import org.glassfish.jersey.internal.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,14 +34,16 @@ import java.net.URLEncoder;
 @Service
 public class JiraEndpoints {
 
-    @Autowired
-    private JiraResource jiraResource;
-
-    @Autowired
-    private SettingsService settingsService;
+    private final SettingsService settingsService;
 
     /** The HTTP client. */
-    protected final Client client = ClientBuilder.newClient();
+    protected final Client client;
+
+    @Autowired
+    public JiraEndpoints(SettingsService settingsService) {
+        this.settingsService = settingsService;
+        this.client = ClientBuilder.newClient();
+    }
 
     /**
      * Endpoint for cycles.
@@ -52,7 +55,19 @@ public class JiraEndpoints {
     public Invocation.Builder cycles(String projectId) {
         return client.target(url() + "/zapi/latest/cycle?projectId=" + projectId + "&expand=executionSummaries")
                 .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
+    }
+
+    public Invocation.Builder folders(Long projectId, Long versionId, Long cycleId) {
+        return client.target(url() + "/zapi/latest/cycle/" + cycleId + "/folders?projectId=" + projectId + "&versionId=" + versionId)
+                .request(MediaType.APPLICATION_JSON)
+                .header("Authorization", auth());
+    }
+
+    public Invocation.Builder testsByFolder(Long projectId, Long versionId, Long cycleId, Long folderId) {
+        return client.target(url() + "/zapi/latest/execution?cycleId=" + cycleId + "&action=expand&projectId=" + projectId + "&versionId=" + versionId + "&folderId=" + folderId + "&offset=0&sorter=OrderId:ASC")
+                .request(MediaType.APPLICATION_JSON)
+                .header("Authorization", auth());
     }
 
     /**
@@ -65,7 +80,7 @@ public class JiraEndpoints {
     public Invocation.Builder issue(Long issueId) {
         return client.target(url() + "/api/2/issue/" + issueId)
                 .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     /**
@@ -76,7 +91,7 @@ public class JiraEndpoints {
     public Invocation.Builder projects() {
         return client.target(url() + "/api/2/project")
                 .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     /**
@@ -89,7 +104,7 @@ public class JiraEndpoints {
     public Invocation.Builder project(String projectId) {
         return client.target(url() + "/api/2/project/" + projectId)
                 .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     /**
@@ -100,7 +115,7 @@ public class JiraEndpoints {
     public Invocation.Builder execution() {
         return client.target(url() + "/zapi/latest/execution")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     /**
@@ -110,11 +125,11 @@ public class JiraEndpoints {
      *         The ID of the project.
      * @return The builder for the request.
      */
-    public Invocation.Builder tests(String projectId) {
+    public Invocation.Builder tests(Long projectId) {
         try {
             return client.target(url() + "/api/2/search?jql=" + URLEncoder.encode("project = " + projectId + " AND issuetype = Test", "UTF-8"))
                     .request(MediaType.APPLICATION_JSON_TYPE)
-                    .header("Authorization", jiraResource.auth());
+                    .header("Authorization", auth());
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
@@ -124,31 +139,31 @@ public class JiraEndpoints {
     public Invocation.Builder versions(String projectId) {
         return client.target(url() + "/api/2/project/" + projectId + "/versions")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     public Invocation.Builder testSteps(Long testId) {
         return client.target(url() + "/zapi/latest/teststep/" + testId)
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     public Invocation.Builder testStep(Long testId, Long stepId) {
         return client.target(url() + "/zapi/latest/teststep/" + testId + "/" + stepId)
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     public Invocation.Builder stepResults(Long executionId) {
         return client.target(url() + "/zapi/latest/stepResult?executionId=" + executionId)
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     public Invocation.Builder stepResult(Long stepResultId) {
         return client.target(url() + "/zapi/latest/stepResult/" + stepResultId)
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", jiraResource.auth());
+                .header("Authorization", auth());
     }
 
     /**
@@ -160,4 +175,14 @@ public class JiraEndpoints {
         return settingsService.getJiraUrl() + "/rest";
     }
 
+    /**
+     * Returns the content for the HTTP "Authorization" header for HTTP Basic auth "username:password".
+     *
+     * @return The base64 encoded credentials.
+     */
+    public String auth() {
+        final String credentials = settingsService.getJiraUsername() + ":" + settingsService.getJiraPassword();
+
+        return "Basic " + Base64.encodeAsString(credentials.getBytes());
+    }
 }

@@ -31,10 +31,14 @@ import java.util.List;
 @RestController
 public class EventResource {
 
-    private final String RESOURCE_URL = "/rest/events/projects";
+    private static final String RESOURCE_URL = "/rest/events/projects";
+
+    private final IssueEventService issueEventService;
 
     @Autowired
-    private IssueEventService issueEventService;
+    public EventResource(IssueEventService issueEventService) {
+        this.issueEventService = issueEventService;
+    }
 
     @RequestMapping(
             method = RequestMethod.GET,

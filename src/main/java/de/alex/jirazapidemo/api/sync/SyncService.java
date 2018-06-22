@@ -149,7 +149,7 @@ public class SyncService {
                     .collect(Collectors.toList());
 
             if (!jiraTestIds.isEmpty()) {
-                final Response res = jiraEndpoints.tests(String.valueOf(projectId)).get();
+                final Response res = jiraEndpoints.tests(projectId).get();
 
                 final JiraJqlIssueResult result = res.readEntity(JiraJqlIssueResult.class);
                 final List<Long> ids = result.getIssues().stream()

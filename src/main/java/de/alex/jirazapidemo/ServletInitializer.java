@@ -17,6 +17,7 @@
 package de.alex.jirazapidemo;
 
 import de.alex.jirazapidemo.alex.AlexEndpoints;
+import de.alex.jirazapidemo.alex.entities.AlexWebhook;
 import de.alex.jirazapidemo.api.sync.SyncService;
 import de.alex.jirazapidemo.services.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import javax.annotation.PostConstruct;
 import javax.ws.rs.client.Entity;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Arrays;
 import java.util.Properties;
 
 /** Initialize the application. */
@@ -60,18 +62,17 @@ public class ServletInitializer extends SpringBootServletInitializer {
     }
 
     private void registerWebhooks() {
-        final String projectsWebhook = "{"
-                + "\"url\":\"http://localhost:9000/rest/wh/alex/projects\""
-                + ",\"name\":\"ALEX for Jira Adapter\""
-                + ",\"events\":[\"PROJECT_DELETED\"]"
-                + "}";
-        alexEndpoints.webhooks().post(Entity.json(projectsWebhook));
+        final AlexWebhook projectsWebhook = new AlexWebhook("ALEX for Jira Adapter",
+                                                            "http://localhost:9000/rest/wh/alex/projects",
+                                                            Arrays.asList("PROJECT_DELETED"));
 
-        final String testsWebhook = "{"
-                + "\"url\":\"http://localhost:9000/rest/wh/alex/tests\""
-                + ",\"name\":\"ALEX for Jira Adapter\""
-                + ",\"events\":[\"TEST_UPDATED\",\"TEST_DELETED\"]"
-                + "}";
+        final AlexWebhook testsWebhook = new AlexWebhook("ALEX for Jira Adapter",
+                                                         "http://localhost:9000/rest/wh/alex/tests",
+                                                         Arrays.asList("TEST_UPDATED", "TEST_DELETED"));
+
+        // We don't care if the requests are a success. If there are already webhooks created in ALEX with the URLs
+        // from above, nothing happens anyway. Otherwise they are created normally.
+        alexEndpoints.webhooks().post(Entity.json(projectsWebhook));
         alexEndpoints.webhooks().post(Entity.json(testsWebhook));
     }
 
@@ -96,7 +97,6 @@ public class ServletInitializer extends SpringBootServletInitializer {
 
             syncService.sync();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             e.printStackTrace();
             System.exit(0);
         }

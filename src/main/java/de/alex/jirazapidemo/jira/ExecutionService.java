@@ -40,28 +40,36 @@ import java.util.concurrent.LinkedBlockingDeque;
 @Service
 public class ExecutionService {
 
-    @Autowired
-    private JiraResource jiraResource;
+    private final JiraEndpoints jiraEndpoints;
 
-    @Autowired
-    private JiraEndpoints jiraEndpoints;
+    private final AlexEndpoints alexEndpoints;
 
-    @Autowired
-    private AlexEndpoints alexEndpoints;
+    private final TestMappingService testMappingService;
 
-    @Autowired
-    private TestMappingService testMappingService;
-
-    @Autowired
-    private SettingsService settingsService;
+    private final SettingsService settingsService;
 
     private final Client client = ClientBuilder.newClient();
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /** If the test execution is in progress. */
     private boolean active = false;
 
-    private BlockingDeque<ExecutionQueueItem> executionQueue = new LinkedBlockingDeque<>();
+    /** The queue of tests to execute. */
+    private final BlockingDeque<ExecutionQueueItem> executionQueue;
+
+    @Autowired
+    public ExecutionService(JiraEndpoints jiraEndpoints,
+                            AlexEndpoints alexEndpoints,
+                            TestMappingService testMappingService,
+                            SettingsService settingsService) {
+        this.jiraEndpoints = jiraEndpoints;
+        this.alexEndpoints = alexEndpoints;
+        this.testMappingService = testMappingService;
+        this.settingsService = settingsService;
+
+        this.executionQueue = new LinkedBlockingDeque<>();
+    }
 
     public void executeTest(ExecutionConfig config) throws Exception {
         checkIfTestMappingExists(config.getJiraTestId());
@@ -223,7 +231,7 @@ public class ExecutionService {
     private void updateExecution(Execution execution) {
         client.target(jiraEndpoints.url() + "/zapi/latest/execution/" + execution.getId() + "/execute")
                 .request(MediaType.APPLICATION_JSON_TYPE)
-                .header("Authorization", jiraResource.auth())
+                .header("Authorization", jiraEndpoints.auth())
                 .put(Entity.json(execution));
     }
 }

@@ -31,23 +31,19 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 @RestController
-public class AlexProjectsResource extends AlexResource {
+public class AlexProjectsResource {
 
     private final String RESOURCE_URL = "/rest/alex/projects";
 
+    private final AlexEndpoints alexEndpoints;
+
+    private final ProjectMappingService projectMappingService;
+
     @Autowired
-    private ProjectMappingService projectMappingService;
-
-    @RequestMapping(
-            method = RequestMethod.POST,
-            value = RESOURCE_URL
-    )
-    private ResponseEntity create(@RequestBody String project) {
-        final Response response = alexEndpoints.projects().post(Entity.json(project));
-
-        return ResponseEntity
-                .status(response.getStatus())
-                .body(response.readEntity(String.class));
+    public AlexProjectsResource(AlexEndpoints alexEndpoints,
+                                ProjectMappingService projectMappingService) {
+        this.alexEndpoints = alexEndpoints;
+        this.projectMappingService = projectMappingService;
     }
 
     @RequestMapping(
