@@ -14,7 +14,7 @@
             v-if="cycle.name != null && cycleId > -1"
             :key="cycleId"
         >
-          <jzd-cycle-list-item :cycle="cycle" :cycle-id="cycleId"></jzd-cycle-list-item>
+          <afj-cycle-list-item :cycle="cycle" :cycle-id="cycleId"></afj-cycle-list-item>
         </div>
       </div>
 
@@ -28,7 +28,7 @@
    * Display a list of versions and cycles in a version.
    */
   export default {
-    name: 'jzd-cycle-list',
+    name: 'afj-cycle-list',
     props: {
 
       /** The map of cycles (versionID -> cycle[]). */

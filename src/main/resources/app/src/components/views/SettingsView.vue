@@ -25,7 +25,7 @@
    * Settings view.
    */
   export default {
-    name: 'jzd-settings-view',
+    name: 'afj-settings-view',
     methods: {
 
       /** Sync the tests and projects between ALEX and Jira. */

@@ -31,12 +31,12 @@
         <h5>Messages</h5>
         <hr>
 
-        <jzd-issue-event-list :events="messages"></jzd-issue-event-list>
+        <afj-issue-event-list :events="messages"></afj-issue-event-list>
 
       </div>
     </div>
 
-    <jzd-confirm-modal ref="confirmModal" v-on:close="onSuccessFromConfirmModal()"></jzd-confirm-modal>
+    <afj-confirm-modal ref="confirmModal" v-on:close="onSuccessFromConfirmModal()"></afj-confirm-modal>
   </div>
 </template>
 
@@ -45,7 +45,7 @@
   import {alexProjectApi} from '../../apis/alex/alex-project-api';
 
   export default {
-    name: 'jzd-project-view',
+    name: 'afj-project-view',
     data() {
       return {
         jiraProject: null,

@@ -6,7 +6,7 @@
     </p>
     <hr>
 
-    <jzd-execution-status></jzd-execution-status>
+    <afj-execution-status></afj-execution-status>
     <hr>
 
     <b-tabs>
@@ -63,7 +63,7 @@
           <hr>
         </div>
 
-        <jzd-test-list :tests="filteredTests" :test-mappings-map="testMappingsMap"></jzd-test-list>
+        <afj-test-list :tests="filteredTests" :test-mappings-map="testMappingsMap"></afj-test-list>
       </b-tab>
       <b-tab title="Cycles">
 
@@ -75,7 +75,7 @@
           <hr>
         </div>
 
-        <jzd-cycle-list :cycles="cycles" :versions-map="versionsMap"></jzd-cycle-list>
+        <afj-cycle-list :cycles="cycles" :versions-map="versionsMap"></afj-cycle-list>
       </b-tab>
     </b-tabs>
 
@@ -87,7 +87,7 @@
   import {jiraVersionApi} from '../../apis/jira/jira-version-api';
 
   export default {
-    name: 'jzd-tests-view',
+    name: 'afj-tests-view',
     data() {
       return {
         cycles: [],

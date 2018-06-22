@@ -1,7 +1,7 @@
 <template>
   <div>
-    <jzd-status></jzd-status>
-    <jzd-navigation></jzd-navigation>
+    <afj-status></afj-status>
+    <afj-navigation></afj-navigation>
     <div class="container mt-3">
       <router-view></router-view>
     </div>
@@ -14,7 +14,7 @@
    * The entry point component for the router.
    */
   export default {
-    name: 'jzd-app-view'
+    name: 'afj-app-view'
   };
 </script>
 

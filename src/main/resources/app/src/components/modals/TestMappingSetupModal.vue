@@ -26,12 +26,12 @@
       </p>
       <hr>
 
-      <jzd-test-tree
+      <afj-test-tree
           :test-suite="rootTestSuite"
           :test-mappings-map="testMappingsMap"
           @selected="selectTestCase"
       >
-      </jzd-test-tree>
+      </afj-test-tree>
     </div>
 
     <template slot="modal-footer">
@@ -45,7 +45,7 @@
   import {alexTestsApi} from '../../apis/alex/alex-tests-api';
 
   export default {
-    name: 'jzd-test-mapping-setup-modal',
+    name: 'afj-test-mapping-setup-modal',
     data() {
       return {
         errorMessage: null,

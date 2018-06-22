@@ -72,7 +72,7 @@
    * or ALEX cannot be established, a popup displays the errors.
    */
   export default {
-    name: 'jzd-status',
+    name: 'afj-status',
     computed: {
       status() {
         return this.$store.state.status.status;

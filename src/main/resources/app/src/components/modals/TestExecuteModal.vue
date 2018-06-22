@@ -10,13 +10,13 @@
       Select a target to execute the test.
     </p>
 
-    <jzd-project-url-list
+    <afj-project-url-list
         v-if="project != null"
         :urls="project.urls"
         :selected-url="selectedUrl"
         v-on:selected="selectUrl"
     >
-    </jzd-project-url-list>
+    </afj-project-url-list>
 
     <template slot="modal-footer">
       <button class="btn btn-primary" @click="execute()">Execute</button>
@@ -32,7 +32,7 @@
   import {projectMappingApi} from '../../apis/project-mapping-api';
 
   export default {
-    name: 'jzd-test-execute-modal',
+    name: 'afj-test-execute-modal',
     data() {
       return {
         errorMessage: null,

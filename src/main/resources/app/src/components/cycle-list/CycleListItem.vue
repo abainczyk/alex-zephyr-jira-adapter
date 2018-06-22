@@ -26,10 +26,10 @@
     </div>
 
     <div v-if="!collapse" class="pl-2 border-left ml-2">
-      <jzd-folder-list :folders="folders"></jzd-folder-list>
+      <afj-folder-list :folders="folders"></afj-folder-list>
     </div>
 
-    <jzd-cycle-execute-modal ref="cycleExecuteModal"></jzd-cycle-execute-modal>
+    <afj-cycle-execute-modal ref="cycleExecuteModal"></afj-cycle-execute-modal>
   </div>
 </template>
 
@@ -38,7 +38,7 @@
   import JzdCycleExecuteModal from '../modals/CycleExecuteModal';
 
   export default {
-    name: 'jzd-cycle-list-item',
+    name: 'afj-cycle-list-item',
     components: {JzdCycleExecuteModal},
     props: {
 

@@ -23,7 +23,7 @@
       </a>
     </div>
 
-    <jzd-project-mapping-modal ref="configModal" v-on:close="handleModalClose"></jzd-project-mapping-modal>
+    <afj-project-mapping-modal ref="configModal" v-on:close="handleModalClose"></afj-project-mapping-modal>
   </div>
 </template>
 
@@ -31,7 +31,7 @@
   import {projectMappingApi} from '../../apis/project-mapping-api';
 
   export default {
-    name: 'jzd-projects-view',
+    name: 'afj-projects-view',
     created() {
       this.$store.dispatch('jira/projects/load')
         .catch(console.error);

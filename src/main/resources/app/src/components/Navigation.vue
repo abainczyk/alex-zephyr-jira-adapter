@@ -41,7 +41,7 @@
    * Component for the navigation bar.
    */
   export default {
-    name: 'jzd-navigation',
+    name: 'afj-navigation',
     computed: {
       ...mapState({
         projectMapping: state => state.currentProjectMapping

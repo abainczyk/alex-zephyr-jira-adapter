@@ -1,10 +1,10 @@
 <template>
   <div>
-    <jzd-folder-list-item
+    <afj-folder-list-item
         v-for="folder in folders"
         :folder="folder"
         :key="folder.id"
-    ></jzd-folder-list-item>
+    ></afj-folder-list-item>
   </div>
 </template>
 
@@ -14,7 +14,7 @@
    * Displays a list of folders in a test cycle.
    */
   export default {
-    name: 'jzd-folder-list',
+    name: 'afj-folder-list',
     props: {
 
       /** The folders in a cycle. */

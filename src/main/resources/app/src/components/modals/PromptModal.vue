@@ -21,7 +21,7 @@
    * A component for displaying simple modal that prompts user for text input.
    */
   export default {
-    name: 'jzd-prompt-modal',
+    name: 'afj-prompt-modal',
     data() {
       return {
 

@@ -8,7 +8,7 @@
    * Dummy empty view component for using child routes in the router more easily.
    */
   export default {
-    name: 'jzd-empty-view'
+    name: 'afj-empty-view'
   };
 </script>
 

@@ -10,7 +10,7 @@
    * The component that bootstraps the app.
    */
   export default {
-    name: 'jzd-app'
+    name: 'afj-app'
   };
 </script>
 

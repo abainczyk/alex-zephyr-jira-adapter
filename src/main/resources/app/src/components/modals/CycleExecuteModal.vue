@@ -10,13 +10,13 @@
       Select a target to execute the tests of the cycle.
     </p>
 
-    <jzd-project-url-list
+    <afj-project-url-list
         v-if="project != null"
         :urls="project.urls"
         :selected-url="selectedUrl"
         v-on:selected="selectUrl"
     >
-    </jzd-project-url-list>
+    </afj-project-url-list>
 
     <template slot="modal-footer">
       <button class="btn btn-primary" @click="execute()">Execute</button>
@@ -31,7 +31,7 @@
   import {jiraCyclesApi} from '../../apis/jira/jira-cycles-api';
 
   export default {
-    name: 'jzd-cycle-execute-modal',
+    name: 'afj-cycle-execute-modal',
     data() {
       return {
         errorMessage: null,

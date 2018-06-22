@@ -21,7 +21,7 @@
    * Polls for the status every 3 seconds.
    */
   export default {
-    name: 'jzd-execution-status',
+    name: 'afj-execution-status',
     data() {
       return {
 

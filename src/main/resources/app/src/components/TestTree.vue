@@ -6,12 +6,12 @@
     </div>
     <div class="pl-4">
       <div v-for="testSuite in testSuites">
-        <jzd-test-tree
+        <afj-test-tree
             :test-suite="testSuite"
             :test-mappings-map="testMappingsMap"
             @selected="selectTestCase"
         >
-        </jzd-test-tree>
+        </afj-test-tree>
       </div>
     </div>
     <div class="pl-4">
@@ -34,7 +34,7 @@
 
 <script>
   export default {
-    name: 'jzd-test-tree',
+    name: 'afj-test-tree',
     props: {
       testMappingsMap: {
         type: Object,

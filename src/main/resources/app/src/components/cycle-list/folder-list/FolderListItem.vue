@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <jzd-folder-execute-modal ref="folderExecuteModal"></jzd-folder-execute-modal>
+    <afj-folder-execute-modal ref="folderExecuteModal"></afj-folder-execute-modal>
   </div>
 </template>
 
@@ -56,7 +56,7 @@
   import {jiraCyclesApi} from '../../../apis/jira/jira-cycles-api';
 
   export default {
-    name: 'jzd-folder-list-item',
+    name: 'afj-folder-list-item',
     props: {
       folder: {
         type: Object,

@@ -33,7 +33,7 @@
   import moment from 'moment';
 
   export default {
-    name: 'jzd-issue-event-list',
+    name: 'afj-issue-event-list',
     props: {
       events: {
         type: Array,

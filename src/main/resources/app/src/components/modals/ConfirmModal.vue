@@ -17,7 +17,7 @@
    * Component for a simple modal dialog that lets users confirm an action.
    */
   export default {
-    name: 'jzd-confirm-modal',
+    name: 'afj-confirm-modal',
     data() {
       return {
 

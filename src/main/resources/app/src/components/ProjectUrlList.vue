@@ -19,7 +19,7 @@
    * Component that displays a selectable list of URLs that are registered in ALEX to the current project.
    */
   export default {
-    name: 'jzd-project-url-list',
+    name: 'afj-project-url-list',
     props: {
 
       /** The URLs in ALEX. */

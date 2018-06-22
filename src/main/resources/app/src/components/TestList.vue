@@ -59,9 +59,9 @@
       There are no test in this project.
     </div>
 
-    <jzd-test-mapping-setup-modal ref="testMappingSetupModal"></jzd-test-mapping-setup-modal>
+    <afj-test-mapping-setup-modal ref="testMappingSetupModal"></afj-test-mapping-setup-modal>
 
-    <jzd-test-execute-modal ref="testExecuteModal"></jzd-test-execute-modal>
+    <afj-test-execute-modal ref="testExecuteModal"></afj-test-execute-modal>
   </div>
 </template>
 
@@ -69,7 +69,7 @@
   import {jiraTestApi} from '../apis/jira/jira-test-api';
 
   export default {
-    name: 'jzd-test-list',
+    name: 'afj-test-list',
     props: {
       tests: {
         default: () => []

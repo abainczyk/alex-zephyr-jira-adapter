@@ -35,7 +35,7 @@
   import {alexProjectApi} from '../../apis/alex/alex-project-api';
 
   export default {
-    name: 'jzd-project-mapping-modal',
+    name: 'afj-project-mapping-modal',
     data() {
       return {
         project: null,
