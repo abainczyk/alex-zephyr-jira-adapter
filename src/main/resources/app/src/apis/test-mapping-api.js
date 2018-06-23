@@ -17,27 +17,47 @@
 import {apiUrl} from '../environments';
 import axios from 'axios/index';
 
+/** API for test mappings. */
 export class TestMappingApi {
 
-  constructor() {
-    this.url = (projectId, testId) => `${apiUrl}/projects/${projectId}/tests/${testId}/mappings`;
+  /**
+   * Create a new test mapping.
+   *
+   * @param {number} projectId The ID of the Jira project.
+   * @param {Object} mapping The test mapping.
+   *
+   * @return {AxiosPromise<any>}
+   */
+  create(projectId, mapping) {
+    return axios.post(`${apiUrl}/projects/${projectId}/testMappings`, mapping);
   }
 
-  create(projectId, testId, mapping) {
-    return axios.post(this.url(projectId, testId), mapping);
-  }
-
-  findOne(projectId, testId) {
-    return axios.get(this.url(projectId, testId));
-  }
-
+  /**
+   * Get all test mappings.
+   *
+   * @param {number} projectId The ID of the project.
+   *
+   * @return {AxiosPromise<any>}
+   */
   find(projectId) {
     return axios.get(`${apiUrl}/projects/${projectId}/testMappings`);
   }
 
-  delete(projectId, testId) {
-    return axios.delete(this.url(projectId, testId));
+  /**
+   * Delete a test mapping.
+   *
+   * @param {number} projectId The ID of the Jira project.
+   * @param {number} mappingId The ID of the test mapping.
+   *
+   * @return {AxiosPromise}
+   */
+  delete(projectId, mappingId) {
+    return axios.delete(`${apiUrl}/projects/${projectId}/testMappings/${mappingId}`);
   }
 }
 
+/**
+ * An instance of the API.
+ * @type {TestMappingApi}
+ */
 export const testMappingApi = new TestMappingApi();

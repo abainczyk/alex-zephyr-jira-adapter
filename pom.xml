@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>alex-zephyr-jira-adapter</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Adapter for executing tests in ALEX and writing results to Zephyr in Jira</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -233,7 +233,7 @@
                                     <pojos>true</pojos>
                                 </generate>
                                 <target>
-                                    <packageName>de.alex.jirazapidemo.db.h2</packageName>
+                                    <packageName>de.alex.alexforjira.db.h2</packageName>
                                     <directory>target/generated-sources/jooq-h2</directory>
                                 </target>
                             </generator>

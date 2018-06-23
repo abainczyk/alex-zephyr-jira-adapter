@@ -57,6 +57,7 @@
 
       /**
        * Get all test cases in the current test suite, sorted alphabetically.
+       *
        * @return {Object[]}
        */
       testCases() {
@@ -69,6 +70,7 @@
 
       /**
        * Get all test suites in the current test suite, sorted alphabetically.
+       *
        * @return {Object[]}
        */
       testSuites() {
@@ -84,8 +86,7 @@
       /**
        * Select a test case from the tree.
        *
-       * @param {Object} testCase
-       *    The selected test case.
+       * @param {Object} testCase The selected test case.
        */
       selectTestCase(testCase) {
         if (this.testMappingsMap[testCase.id] == null) {

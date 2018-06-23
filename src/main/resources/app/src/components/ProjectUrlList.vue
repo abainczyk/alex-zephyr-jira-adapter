@@ -39,8 +39,7 @@
       /**
        * Select a URL from the list.
        *
-       * @param {Object} url
-       *    The URL to select.
+       * @param {Object} url The URL to select.
        */
       selectUrl(url) {
         this.$emit('selected', url);

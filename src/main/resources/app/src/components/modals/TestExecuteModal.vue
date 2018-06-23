@@ -26,9 +26,8 @@
 </template>
 
 <script>
-  import axios from 'axios';
-  import {apiUrl} from '../../environments';
   import {alexProjectApi} from '../../apis/alex/alex-project-api';
+  import {jiraTestApi} from '../../apis/jira/jira-test-api';
   import {projectMappingApi} from '../../apis/project-mapping-api';
 
   export default {
@@ -67,7 +66,7 @@
         this.errorMessage = null;
 
         this.data.alexUrlId = this.selectedUrl.id;
-        axios.post(`${apiUrl}/executions`, this.data)
+        jiraTestApi.execute(this.data.jiraProjectId, this.data.jiraTestId, this.data)
           .then(() => {
             this.$toasted.success('The test process has been started.');
             this.dismiss();

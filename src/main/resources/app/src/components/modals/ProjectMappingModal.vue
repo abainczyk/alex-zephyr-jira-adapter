@@ -11,13 +11,18 @@
       </p>
 
       <div class="list-group" v-if="projects.length > 0">
-        <div class="list-group-item" v-for="project in projects" v-bind:class="{'active': project === selectedProject}"
-             @click="selectProject(project)">
+        <a
+            href="#"
+            class="list-group-item list-group-item-action"
+            v-for="project in projects"
+            :class="{'active': project === selectedProject}"
+            @click.prevent="selectProject(project)"
+        >
           <div>
             <strong>{{project.name}}</strong>
           </div>
           <small>{{project.baseUrl}}</small>
-        </div>
+        </a>
       </div>
       <div class="alert alert-info mb-0" v-else>
         There are no projects in ALEX.

@@ -8,18 +8,18 @@
             class="btn btn-primary btn-block text-left mb-3"
             v-if="jiraProject != null"
         >
-          Edit tests
+          Tests
         </router-link>
 
         <div v-if="jiraProject != null && alexProject != null">
           <div class="card">
             <div class="card-body">
               <p>
-                <strong>{{jiraProject.name}}</strong> is connected to <strong>{{alexProject.name}}</strong>.
+                <strong>{{jiraProject.name}}</strong> is mapped to <strong>{{alexProject.name}}</strong>.
               </p>
               <a href="#" class="btn btn-sm btn-outline-secondary" @click.prevent="openConfirmModal()">
                 <font-awesome-icon icon="unlink"></font-awesome-icon>
-                Remove connection
+                Remove mapping
               </a>
             </div>
           </div>
@@ -75,11 +75,11 @@
     methods: {
 
       openConfirmModal() {
-        this.$refs.confirmModal.open('Do you want to remove the connection? All related data will be deleted as well.');
+        this.$refs.confirmModal.open('Do you want to remove the mapping? All related data will be deleted as well.');
       },
 
       onSuccessFromConfirmModal() {
-        this.$store.dispatch('projectMappings/remove', this.jiraProject.id)
+        this.$store.dispatch('projectMappings/remove', this.projectMapping.id)
           .then(() => {
             this.$router.push('/app/projects');
             this.$toasted.success(`The connection between ${this.jiraProject.name} and ${this.alexProject.name} has been removed.`);

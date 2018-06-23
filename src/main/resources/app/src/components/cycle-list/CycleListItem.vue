@@ -58,7 +58,7 @@
       toggleCycle() {
         this.collapse = !this.collapse;
         if (!this.collapse) {
-          jiraCyclesApi.getFolders(this.cycleId, this.cycle.projectId, this.cycle.versionId)
+          jiraCyclesApi.getFolders(this.cycle.projectId, this.cycle.versionId, this.cycleId)
             .then(res => this.folders = res.data)
             .catch(console.error);
         }
@@ -74,10 +74,8 @@
       /**
        * Calculate how many tests have been executed in the cycle in percent.
        *
-       * @param {Object} cycle
-       *    The cycle.
-       * @return {number}
-       *    The number of executed tests in the cycle in percent.
+       * @param {Object} cycle The cycle.
+       * @return {number} The number of executed tests in the cycle in percent.
        */
       calculateCycleProgress(cycle) {
         return (100 / cycle.totalExecutions) * cycle.totalExecuted;

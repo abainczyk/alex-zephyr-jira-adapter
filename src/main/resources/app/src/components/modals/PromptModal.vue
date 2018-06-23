@@ -43,10 +43,8 @@
       /**
        * Open the modal dialog.
        *
-       * @param {string} text
-       *    The text that is displayed in the header.
-       * @param {?string} input
-       *    Value that is displayed as default in the user input field.
+       * @param {string} text The text that is displayed in the header.
+       * @param {?string} input Value that is displayed as default in the user input field.
        */
       open(text, input = null) {
         this.text = text;

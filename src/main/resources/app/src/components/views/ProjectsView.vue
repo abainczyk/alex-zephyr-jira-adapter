@@ -62,8 +62,7 @@
       /**
        * Opens a Jira project.
        *
-       * @param {Object} project
-       *    The project to work with.
+       * @param {Object} project The project to work with.
        */
       openProject(project) {
         if (this.projectMappingsMap[project.id] == null) {
@@ -77,8 +76,7 @@
       /**
        * Is called when the mapping has been created in the modal dialog.
        *
-       * @param {Object} mapping
-       *    The created mapping.
+       * @param {Object} mapping The created mapping.
        */
       onModalSuccess(mapping) {
         this.$store.commit('projectMappings/setCurrent', mapping);

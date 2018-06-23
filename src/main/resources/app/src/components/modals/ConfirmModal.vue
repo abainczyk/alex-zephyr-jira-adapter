@@ -33,8 +33,7 @@
       /**
        * Open the modal.
        *
-       * @param {string} text
-       *    The text to display.
+       * @param {string} text The text to display.
        */
       open(text) {
         this.text = text;

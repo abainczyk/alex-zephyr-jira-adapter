@@ -59,7 +59,7 @@
       There are no test in this project.
     </div>
 
-    <afj-test-mapping-setup-modal ref="testMappingSetupModal"></afj-test-mapping-setup-modal>
+    <afj-test-mapping-modal ref="testMappingModal"></afj-test-mapping-modal>
 
     <afj-test-execute-modal ref="testExecuteModal"></afj-test-execute-modal>
   </div>
@@ -114,14 +114,11 @@
           alexTestId: null
         };
 
-        this.$refs.testMappingSetupModal.open(testMapping);
+        this.$refs.testMappingModal.open(testMapping);
       },
 
       removeMapping(test) {
-        const jiraProjectId = test.fields.project.id;
-        const jiraTestId = test.id;
-
-        this.$store.dispatch('testMappings/remove', {jiraProjectId, jiraTestId})
+        this.$store.dispatch('testMappings/remove', this.testMappingsMap[test.id])
           .then(() => this.$toasted.success('The mapping has been removed for this test.'))
           .catch(console.error);
       }

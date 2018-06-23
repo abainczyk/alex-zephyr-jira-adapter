@@ -79,10 +79,8 @@
         this.collapse = !this.collapse;
 
         if (!this.collapse) {
-          jiraCyclesApi.getTests(this.folder.cycleId, this.folder.folderId, this.folder.projectId, this.folder.versionId)
-            .then(res => {
-              this.status = res.data;
-            })
+          jiraCyclesApi.getTests(this.folder.projectId, this.folder.versionId, this.folder.cycleId, this.folder.folderId)
+            .then(res => this.status = res.data)
             .catch(console.error);
         }
       },
