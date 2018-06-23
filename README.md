@@ -59,7 +59,7 @@ alex.password=
 jira.url=
 jira.username=
 jira.password=
- ```
+```
  
 The URLs have to be specified **without** trailing slash:
 
@@ -110,7 +110,7 @@ The documentation is available at */swagger-ui.html* in a running application, e
 
 
 [alex]: https://github.com/learnlib/alex 
-[alex-plugin]: # 
+[alex-plugin]: https://bitbucket.org/abainczyk/alex-zephyr-jira-plugin
 [jira]: https://de.atlassian.com/software/jira/download 
 [zephyr]: https://marketplace.atlassian.com/apps/1014681/zephyr-for-jira-test-management?hosting=server 
 [zapi]: https://marketplace.atlassian.com/apps/1211674/zapi?hosting=server&tab=overview 
