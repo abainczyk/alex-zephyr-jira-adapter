@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import axios from 'axios';
 import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
@@ -35,6 +36,8 @@ import ProjectUrlList from './components/ProjectUrlList';
 import ExecutionStatus from './components/ExecutionStatus';
 import FolderExecuteModal from './components/modals/FolderExecuteModal';
 import TestTree from './components/TestTree';
+import UserCreateModal from './components/modals/UserCreateModal';
+import UserEditModal from './components/modals/UserEditModal';
 
 import fontawesome from '@fortawesome/fontawesome';
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
@@ -98,6 +101,18 @@ Vue.component(ProjectUrlList.name, ProjectUrlList);
 Vue.component(ExecutionStatus.name, ExecutionStatus);
 Vue.component(FolderExecuteModal.name, FolderExecuteModal);
 Vue.component(TestTree.name, TestTree);
+Vue.component(UserCreateModal.name, UserCreateModal);
+Vue.component(UserEditModal.name, UserEditModal);
+
+/**
+ * Include the "Authorization" token for the HTTP Basic Auth in each request.
+ */
+axios.interceptors.request.use(config => {
+  config.headers['Authorization'] = localStorage.getItem('token');
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
 
 new Vue({
   router,

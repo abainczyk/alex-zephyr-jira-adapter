@@ -19,6 +19,9 @@ package de.alex.alexforjira;
 import de.alex.alexforjira.api.alex.AlexEndpoints;
 import de.alex.alexforjira.api.alex.entities.AlexWebhook;
 import de.alex.alexforjira.api.sync.SyncService;
+import de.alex.alexforjira.api.users.UserRole;
+import de.alex.alexforjira.api.users.UserService;
+import de.alex.alexforjira.db.h2.tables.pojos.User;
 import de.alex.alexforjira.services.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,11 +41,17 @@ import java.util.Properties;
 @Component
 public class ServletInitializer extends SpringBootServletInitializer {
 
+    private static final String DEFAULT_ADMIN_EMAIL = "admin@alex.de";
+
+    private static final String DEFAULT_ADMIN_PASSWORD = "admin";
+
     private final SyncService syncService;
 
     private final SettingsService settingsService;
 
     private final AlexEndpoints alexEndpoints;
+
+    private final UserService userService;
 
     /** The absolute path to the configuration file. */
     @Value("${app.config-file}")
@@ -51,10 +60,12 @@ public class ServletInitializer extends SpringBootServletInitializer {
     @Autowired
     public ServletInitializer(final SyncService syncService,
                               final SettingsService settingsService,
-                              final AlexEndpoints alexEndpoints) {
+                              final AlexEndpoints alexEndpoints,
+                              final UserService userService) {
         this.syncService = syncService;
         this.settingsService = settingsService;
         this.alexEndpoints = alexEndpoints;
+        this.userService = userService;
     }
 
     @Override
@@ -65,10 +76,24 @@ public class ServletInitializer extends SpringBootServletInitializer {
     /** Sync state between ALEX and Jira. */
     @PostConstruct
     public void init() {
-        sync();
+        loadSettings();
+        createDefaultAdmin();
         registerWebhooks();
+        syncService.sync();
     }
 
+    /** Creates a default admin account if the app is started for the first time. */
+    private void createDefaultAdmin() {
+        if (userService.getNumberOfUsers() == 0) {
+            final User user = new User();
+            user.setEmail(DEFAULT_ADMIN_EMAIL);
+            user.setRole(UserRole.ADMIN.name());
+            user.setHashedPassword(DEFAULT_ADMIN_PASSWORD);
+            userService.create(user);
+        }
+    }
+
+    /** Register webhooks in ALEX once so that the app can be notified by changes. */
     private void registerWebhooks() {
         final AlexWebhook projectsWebhook = new AlexWebhook("ALEX for Jira Adapter",
                                                             "http://localhost:9000/rest/wh/alex/projects",
@@ -84,7 +109,8 @@ public class ServletInitializer extends SpringBootServletInitializer {
         alexEndpoints.webhooks().post(Entity.json(testsWebhook));
     }
 
-    private void sync() {
+    /** Load and validate the config file. */
+    private void loadSettings() {
         try {
             if (configFile == null || configFile.trim().equals("")) {
                 throw new Exception("\nThe config file has not been specified\n");
@@ -102,8 +128,6 @@ public class ServletInitializer extends SpringBootServletInitializer {
             if (!settingsService.isValid()) {
                 throw new Exception("The configuration is not valid");
             }
-
-            syncService.sync();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(0);

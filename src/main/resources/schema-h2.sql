@@ -30,3 +30,14 @@ CREATE TABLE IF NOT EXISTS issue_event (
 
   CONSTRAINT pk_t_issue_event PRIMARY KEY (id)
 );
+
+-- users
+CREATE TABLE IF NOT EXISTS user (
+  id              BIGINT       NOT NULL AUTO_INCREMENT,
+  email           VARCHAR(254) NOT NULL,
+  hashed_password TEXT         NOT NULL,
+  role            VARCHAR(24)  NOT NULL,
+
+  CONSTRAINT pk_t_user_id PRIMARY KEY (id),
+  CONSTRAINT pk_t_user_email UNIQUE (email)
+)

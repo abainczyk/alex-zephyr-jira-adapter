@@ -21,11 +21,13 @@ import {projectMappingsStore} from './project-mappings-store';
 import {testMappingsStore} from './test-mappings-store';
 import {statusStore} from './status-store';
 import {messagesStore} from './messages-store';
+import {userStore} from './user-store';
 
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
   modules: {
+    users: userStore,
     projectMappings: projectMappingsStore,
     testMappings: testMappingsStore,
     messages: messagesStore,

@@ -26,6 +26,14 @@
           <li class="nav-item">
             <router-link :to="{name: 'settings'}" class="nav-link" active-class="active" exact>Settings</router-link>
           </li>
+          <li class="nav-item" v-if="currentUser.role === 'ADMIN'">
+            <router-link :to="{name: 'adminUsers'}" class="nav-link" active-class="active" exact>Users</router-link>
+          </li>
+        </ul>
+        <ul class="navbar-nav float-right">
+          <li class="nav-item">
+            <a class="nav-link" href="" @click.prevent="logout()">Logout</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -33,9 +41,6 @@
 </template>
 
 <script>
-  import {createNamespacedHelpers} from 'vuex';
-
-  const {mapState} = createNamespacedHelpers('projectMappings');
 
   /**
    * Component for the navigation bar.
@@ -43,9 +48,21 @@
   export default {
     name: 'afj-navigation',
     computed: {
-      ...mapState({
-        projectMapping: state => state.currentProjectMapping
-      })
+      projectMapping() {
+        return this.$store.state.projectMappings.currentProjectMapping;
+      },
+      currentUser() {
+        return this.$store.state.users.currentUser;
+      }
+    },
+    methods: {
+      logout() {
+        this.$store.dispatch('users/signOut')
+          .then(() => {
+            this.$toasted.success('You have signed out.');
+            this.$router.push({name: 'login'});
+          });
+      }
     }
   };
 </script>
