@@ -96,11 +96,11 @@ public class ServletInitializer extends SpringBootServletInitializer {
     /** Register webhooks in ALEX once so that the app can be notified by changes. */
     private void registerWebhooks() {
         final AlexWebhook projectsWebhook = new AlexWebhook("ALEX for Jira Adapter",
-                                                            "http://localhost:9000/rest/wh/alex/projects",
+                                                            settingsService.getAppUrl() + "/rest/wh/alex/projects",
                                                             Collections.singletonList("PROJECT_DELETED"));
 
         final AlexWebhook testsWebhook = new AlexWebhook("ALEX for Jira Adapter",
-                                                         "http://localhost:9000/rest/wh/alex/tests",
+                                                         settingsService.getAppUrl() + "/rest/wh/alex/tests",
                                                          Arrays.asList("TEST_UPDATED", "TEST_DELETED"));
 
         // We don't care if the requests are a success. If there are already webhooks created in ALEX with the URLs

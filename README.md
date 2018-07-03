@@ -52,13 +52,27 @@ The configuration for the adapter is specified in a config `.ini` file:
 ```
 // config.ini
 
+# The URL where the adapter is reached in the internet by other applications.
+# Add the URL without trailing "/"
+app.url=
+
+# The URL where ALEX is reached without trailing "/".
 alex.url=
+# The credentials that are used to authorize in ALEX.
+# Use the account that also contains the related projects.
 alex.email=
 alex.password=
 
+# The URL where Jira is reached without trailing "/".
 jira.url=
+# The credentials that are used to authorize in Jira.
+# Use an account that has the necessary rights to access the ZAPI REST API.
 jira.username=
 jira.password=
+# Restrict the usage of the adapter to only some Jira projects by their IDs.
+# IDs have to be specified as comma separated list, e.g. 10000,10211.
+# Leave the field empty to allow access to all projects in Jira.
+jira.allowed-project-ids=
 ```
  
 The URLs have to be specified **without** trailing slash:

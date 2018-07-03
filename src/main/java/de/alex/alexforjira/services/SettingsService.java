@@ -18,7 +18,10 @@ package de.alex.alexforjira.services;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /** Utility class that allows access to the properties in the config file. */
 @Service
@@ -29,6 +32,15 @@ public class SettingsService {
 
     public void setProperties(final Properties properties) {
         this.properties = properties;
+    }
+
+    public String getAppUrl() {
+        return properties.getProperty("app.url");
+    }
+
+    public List<Long> getAllowedJiraProjectIds() {
+        final String ids = properties.getProperty("jira.allowed-project-ids");
+        return Arrays.stream(ids.split(",")).map(Long::valueOf).collect(Collectors.toList());
     }
 
     public String getJiraUsername() {
@@ -66,6 +78,7 @@ public class SettingsService {
                 && !getJiraUrl().trim().equals("")
                 && !getAlexEmail().trim().equals("")
                 && !getAlexUrl().trim().equals("")
-                && !getAlexPassword().trim().equals("");
+                && !getAlexPassword().trim().equals("")
+                && !getAppUrl().trim().equals("");
     }
 }
