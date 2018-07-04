@@ -57,7 +57,7 @@ The configuration for the adapter is specified in a config `.ini` file:
 app.url=
 
 # Browser specific settings where tests are executed.
-# The name of the browser in [chrome, firefox, htmlunit]. Make sure the browser is configured in ALEX.
+# The name of the browser in [chrome, firefox, htmlUnit, remote]. Make sure the browser is configured in ALEX.
 app.browser.name=
 # The width of the browser window. Has to be > 0
 app.browser.width=

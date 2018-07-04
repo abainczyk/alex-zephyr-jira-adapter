@@ -19,6 +19,8 @@ package de.alex.alexforjira.api.executions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.alex.alexforjira.api.alex.AlexEndpoints;
+import de.alex.alexforjira.api.alex.entities.AlexProject;
+import de.alex.alexforjira.api.alex.entities.AlexProjectUrl;
 import de.alex.alexforjira.api.executions.entities.Execution;
 import de.alex.alexforjira.api.executions.entities.ExecutionConfig;
 import de.alex.alexforjira.api.executions.entities.ExecutionQueueItem;
@@ -45,6 +47,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 @Service
 public class ExecutionService {
+
+    private static final int POLL_FOR_TEST_STATUS_INTERVAL = 3000;
 
     private final JiraEndpoints jiraEndpoints;
 
@@ -162,6 +166,8 @@ public class ExecutionService {
                 final ExecutionQueueItem queueItem = executionQueue.peek();
                 final TestMapping testMapping = queueItem.getTestMapping();
                 final JiraExecution execution = queueItem.getExecution();
+                final AlexProject alexProject = alexEndpoints.project(testMapping.getAlexProjectId()).get()
+                        .readEntity(AlexProject.class);
 
                 try {
                     executeTestInAlex(queueItem.getConfig(), testMapping);
@@ -172,12 +178,11 @@ public class ExecutionService {
                         final JsonNode statusJson = objectMapper.readTree(statusResponse.readEntity(String.class));
                         final boolean active = statusJson.get("active").asBoolean();
                         if (active) {
-                            Thread.sleep(3000);
+                            Thread.sleep(POLL_FOR_TEST_STATUS_INTERVAL);
                             continue;
                         }
 
                         final Response reportResponse = alexEndpoints.latestTestReport(testMapping.getAlexProjectId()).get();
-
                         final JsonNode reportJson = objectMapper.readTree(reportResponse.readEntity(String.class));
 
                         final List<StepResult> stepResults = getStepsByExecutionId(execution.getId());
@@ -198,8 +203,11 @@ public class ExecutionService {
                         exec.setId(execution.getId());
                         exec.setStatus(reportJson.get("passed").asBoolean() ? StepResult.PASSED : StepResult.FAILED);
 
-                        final String reportUrl = "Report: " + settingsService.getAlexUrl() + "/#!/redirect?to=" + URLEncoder.encode("/projects/" + testMapping.getAlexProjectId() + "/tests/reports/" + reportJson.get("id").asText(), "UTF-8");
-                        exec.setComment(reportUrl);
+                        final String report = "Report: " + settingsService.getAlexUrl() + "/#!/redirect?to=" + URLEncoder.encode("/projects/" + testMapping.getAlexProjectId() + "/tests/reports/" + reportJson.get("id").asText(), "UTF-8");
+                        final AlexProjectUrl url = alexProject.getUrls().stream().filter(u -> u.getId().equals(queueItem.getConfig().getAlexUrlId())).findFirst().get();
+                        final String stage = "Stage: " + (url.getName() == null ? "" : url.getName() + " ") + "(" + url.getName() + ")";
+
+                        exec.setComment(stage + "\n" + report);
                         updateExecution(exec);
 
                         break;

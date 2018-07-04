@@ -17,12 +17,15 @@
 package de.alex.alexforjira;
 
 import de.alex.alexforjira.api.alex.AlexEndpoints;
+import de.alex.alexforjira.api.alex.AlexProjectsResource;
 import de.alex.alexforjira.api.alex.entities.AlexWebhook;
 import de.alex.alexforjira.api.sync.SyncService;
 import de.alex.alexforjira.api.users.UserService;
 import de.alex.alexforjira.api.users.entities.UserRole;
 import de.alex.alexforjira.db.h2.tables.pojos.User;
 import de.alex.alexforjira.shared.SettingsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -40,6 +43,8 @@ import java.util.Properties;
 /** Initialize the application. */
 @Component
 public class ServletInitializer extends SpringBootServletInitializer {
+
+    private static final Logger log = LoggerFactory.getLogger(AlexProjectsResource.class);
 
     private static final String DEFAULT_ADMIN_EMAIL = "admin@alex.de";
 
@@ -76,10 +81,12 @@ public class ServletInitializer extends SpringBootServletInitializer {
     /** Sync state between ALEX and Jira. */
     @PostConstruct
     public void init() {
+        log.info("Entering init()");
         loadSettings();
         createDefaultAdmin();
         registerWebhooks();
         syncService.sync();
+        log.info("Leaving init()");
     }
 
     /** Creates a default admin account if the app is started for the first time. */
