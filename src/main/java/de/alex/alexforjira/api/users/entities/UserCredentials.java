@@ -14,37 +14,30 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.api.executions;
+package de.alex.alexforjira.api.users.entities;
 
-public class ExecutionConfig {
+/** The credentials of a user that are used to login. */
+public class UserCredentials {
 
-    private Long jiraProjectId;
+    /** The email of the user. */
+    private String email;
 
-    private Long alexUrlId;
+    /** The password of the user. */
+    private String password;
 
-    private Long jiraTestId;
-
-    public Long getAlexUrlId() {
-        return alexUrlId;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAlexUrlId(Long alexUrlId) {
-        this.alexUrlId = alexUrlId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public Long getJiraProjectId() {
-        return jiraProjectId;
+    public String getPassword() {
+        return password;
     }
 
-    public void setJiraProjectId(Long jiraProjectId) {
-        this.jiraProjectId = jiraProjectId;
-    }
-
-    public Long getJiraTestId() {
-        return jiraTestId;
-    }
-
-    public void setJiraTestId(Long jiraTestId) {
-        this.jiraTestId = jiraTestId;
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

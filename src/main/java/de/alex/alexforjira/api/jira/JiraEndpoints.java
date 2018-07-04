@@ -16,7 +16,7 @@
 
 package de.alex.alexforjira.api.jira;
 
-import de.alex.alexforjira.services.SettingsService;
+import de.alex.alexforjira.shared.SettingsService;
 import org.glassfish.jersey.internal.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +51,7 @@ public class JiraEndpoints {
      *         The ID of the project.
      * @return The builder for the request.
      */
-    public Invocation.Builder cycles(String projectId) {
+    public Invocation.Builder cycles(Long projectId) {
         return client.target(url() + "/zapi/latest/cycle?" + "projectId=" + projectId + "&expand=executionSummaries")
                 .request(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, auth());

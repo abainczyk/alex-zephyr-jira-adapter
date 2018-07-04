@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.api.executions;
+package de.alex.alexforjira.api.executions.entities;
 
 import de.alex.alexforjira.api.jira.entities.JiraExecution;
 import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;

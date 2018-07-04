@@ -16,7 +16,7 @@
 
 package de.alex.alexforjira.api.sync;
 
-import de.alex.alexforjira.utils.RestError;
+import de.alex.alexforjira.shared.RestError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

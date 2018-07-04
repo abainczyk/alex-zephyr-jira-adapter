@@ -16,10 +16,12 @@
 
 package de.alex.alexforjira.api.jira.cycles;
 
-import de.alex.alexforjira.api.executions.ExecutionConfig;
+import de.alex.alexforjira.api.executions.entities.ExecutionConfig;
 import de.alex.alexforjira.api.executions.ExecutionService;
 import de.alex.alexforjira.api.jira.JiraEndpoints;
 import de.alex.alexforjira.api.jira.entities.JiraExecution;
+import de.alex.alexforjira.security.ProjectForbiddenException;
+import de.alex.alexforjira.shared.JiraUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,11 +44,16 @@ public class JiraCycleResource {
 
     private final JiraEndpoints jiraEndpoints;
 
+    private final JiraUtils jiraUtils;
+
     private final ExecutionService executionService;
 
     @Autowired
-    public JiraCycleResource(final JiraEndpoints jiraEndpoints, final ExecutionService executionService) {
+    public JiraCycleResource(final JiraEndpoints jiraEndpoints,
+                             final JiraUtils jiraUtils,
+                             final ExecutionService executionService) {
         this.jiraEndpoints = jiraEndpoints;
+        this.jiraUtils = jiraUtils;
         this.executionService = executionService;
     }
 
@@ -55,7 +62,9 @@ public class JiraCycleResource {
             value = RESOURCE_URL,
             produces = MediaType.APPLICATION_JSON
     )
-    public ResponseEntity getCycles(final @RequestParam("projectId") String projectId) {
+    public ResponseEntity getCycles(final @RequestParam("projectId") Long projectId)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(projectId);
 
         final Response response = jiraEndpoints.cycles(projectId).get();
         return ResponseEntity.status(response.getStatus()).body(response.readEntity(String.class));
@@ -68,7 +77,9 @@ public class JiraCycleResource {
     )
     public ResponseEntity getFolders(final @PathVariable Long cycleId,
                                      final @RequestParam("projectId") Long projectId,
-                                     final @RequestParam("versionId") Long versionId) {
+                                     final @RequestParam("versionId") Long versionId)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(projectId);
 
         final Response response = jiraEndpoints.folders(projectId, versionId, cycleId).get();
         return ResponseEntity.status(response.getStatus()).body(response.readEntity(String.class));
@@ -82,7 +93,9 @@ public class JiraCycleResource {
     public ResponseEntity getTestsByFolder(final @PathVariable Long cycleId,
                                            final @PathVariable Long folderId,
                                            final @RequestParam("projectId") Long projectId,
-                                           final @RequestParam("versionId") Long versionId) {
+                                           final @RequestParam("versionId") Long versionId)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(projectId);
 
         final Response response = jiraEndpoints.testsByFolder(projectId, versionId, cycleId, folderId).get();
         return ResponseEntity.status(response.getStatus()).body(response.readEntity(String.class));
@@ -93,7 +106,9 @@ public class JiraCycleResource {
             value = RESOURCE_URL + "/{cycleId}/execute"
     )
     public ResponseEntity executeCycle(final @PathVariable Long cycleId,
-                                       final @RequestBody CycleExecutionConfig config) {
+                                       final @RequestBody CycleExecutionConfig config)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(config.getProjectId());
 
         new Thread(() -> {
             final Response res1 = jiraEndpoints.folders(config.getProjectId(), config.getVersionId(), cycleId).get();
@@ -116,7 +131,9 @@ public class JiraCycleResource {
     )
     public ResponseEntity executeFolder(final @PathVariable Long cycleId,
                                         final @PathVariable Long folderId,
-                                        final @RequestBody CycleFolderExecutionConfig config) {
+                                        final @RequestBody CycleFolderExecutionConfig config)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(config.getProjectId());
 
         new Thread(() -> {
             final Response res = jiraEndpoints.testsByFolder(config.getProjectId(), config.getVersionId(), cycleId, folderId).get();

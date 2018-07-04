@@ -17,6 +17,9 @@
 package de.alex.alexforjira.api.jira.projects;
 
 import de.alex.alexforjira.api.jira.JiraEndpoints;
+import de.alex.alexforjira.api.jira.entities.JiraProject;
+import de.alex.alexforjira.security.ProjectForbiddenException;
+import de.alex.alexforjira.shared.JiraUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +29,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 /** Works as a proxy to the Jira REST API for projects. The returning status code depends on the answer of the API. */
 @RestController
@@ -39,9 +44,12 @@ public class JiraProjectResource {
 
     private final JiraEndpoints jiraEndpoints;
 
+    private final JiraUtils jiraUtils;
+
     @Autowired
-    public JiraProjectResource(JiraEndpoints jiraEndpoints) {
+    public JiraProjectResource(final JiraEndpoints jiraEndpoints, final JiraUtils jiraUtils) {
         this.jiraEndpoints = jiraEndpoints;
+        this.jiraUtils = jiraUtils;
     }
 
     /**
@@ -57,9 +65,10 @@ public class JiraProjectResource {
     public ResponseEntity getAll() {
         log.info("Entering getAll()");
         final Response res = jiraEndpoints.projects().get();
+        final List<JiraProject> projects = res.readEntity(new GenericType<List<JiraProject>>(){});
 
         log.info("Leaving getAll() with status {}", res.getStatus());
-        return ResponseEntity.status(res.getStatus()).body(res.readEntity(String.class));
+        return ResponseEntity.status(res.getStatus()).body(jiraUtils.filterAllowedProjects(projects));
     }
 
     /**
@@ -74,8 +83,9 @@ public class JiraProjectResource {
             value = RESOURCE_URL + "/{projectId}",
             produces = MediaType.APPLICATION_JSON
     )
-    public ResponseEntity get(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity get(@PathVariable("projectId") Long projectId) throws ProjectForbiddenException {
         log.info("Entering get(projectId: {})", projectId);
+        jiraUtils.checkIfProjectIsAllowed(projectId);
         final Response res = jiraEndpoints.project(projectId).get();
 
         log.info("Leaving get(projectId: {}) with status {}", projectId, res.getStatus());

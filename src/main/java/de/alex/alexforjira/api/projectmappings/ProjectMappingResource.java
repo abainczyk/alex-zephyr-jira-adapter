@@ -17,7 +17,9 @@
 package de.alex.alexforjira.api.projectmappings;
 
 import de.alex.alexforjira.db.h2.tables.pojos.ProjectMapping;
-import de.alex.alexforjira.utils.RestError;
+import de.alex.alexforjira.security.ProjectForbiddenException;
+import de.alex.alexforjira.shared.JiraUtils;
+import de.alex.alexforjira.shared.RestError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +43,12 @@ public class ProjectMappingResource {
 
     private final ProjectMappingService projectMappingService;
 
+    private final JiraUtils jiraUtils;
+
     @Autowired
-    public ProjectMappingResource(ProjectMappingService projectMappingService) {
+    public ProjectMappingResource(final ProjectMappingService projectMappingService, final JiraUtils jiraUtils) {
         this.projectMappingService = projectMappingService;
+        this.jiraUtils = jiraUtils;
     }
 
     @RequestMapping(
@@ -52,7 +57,9 @@ public class ProjectMappingResource {
             produces = MediaType.APPLICATION_JSON
     )
     public ResponseEntity<List<ProjectMapping>> getAll() {
+        log.info("Entering getAll()");
         final List<ProjectMapping> mappings = projectMappingService.getAll();
+        log.info("Leaving delete() with status {}", HttpStatus.OK);
         return ResponseEntity.ok(mappings);
     }
 
@@ -62,9 +69,18 @@ public class ProjectMappingResource {
             produces = MediaType.APPLICATION_JSON,
             consumes = MediaType.APPLICATION_JSON
     )
-    public ResponseEntity<ProjectMapping> create(@RequestBody final ProjectMapping projectMapping) {
-        final ProjectMapping mapping = projectMappingService.create(projectMapping);
-        return ResponseEntity.ok(mapping);
+    public ResponseEntity create(@RequestBody final ProjectMapping projectMapping) throws ProjectForbiddenException {
+        log.info("Entering delete({})", projectMapping);
+        jiraUtils.checkIfProjectIsAllowed(projectMapping.getJiraProjectId());
+
+        try {
+            final ProjectMapping mapping = projectMappingService.create(projectMapping);
+            log.info("Leaving delete() with status {}", HttpStatus.OK);
+            return ResponseEntity.ok(mapping);
+        } catch (Exception e) {
+            log.info("Leaving delete() with status {}", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RestError(HttpStatus.BAD_REQUEST, e.getMessage()));
+        }
     }
 
     @RequestMapping(
@@ -72,7 +88,9 @@ public class ProjectMappingResource {
             value = RESOURCE_URL + "/byJiraProjectId/{projectId}",
             produces = MediaType.APPLICATION_JSON
     )
-    public ResponseEntity<ProjectMapping> getByJiraProjectId(@PathVariable("projectId") final Long projectId) {
+    public ResponseEntity<ProjectMapping> getByJiraProjectId(@PathVariable("projectId") final Long projectId)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(projectId);
         final ProjectMapping mapping = projectMappingService.getByJiraProjectId(projectId);
         return mapping == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(mapping);
     }

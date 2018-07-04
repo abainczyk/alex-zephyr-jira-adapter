@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.auth;
+package de.alex.alexforjira.security;
 
 import de.alex.alexforjira.api.users.PasswordEncoderProvider;
-import de.alex.alexforjira.api.users.UserRole;
 import de.alex.alexforjira.api.users.UserService;
+import de.alex.alexforjira.api.users.entities.UserRole;
 import de.alex.alexforjira.db.h2.tables.pojos.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

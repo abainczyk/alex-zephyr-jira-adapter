@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.services;
+package de.alex.alexforjira.shared;
 
 import org.springframework.stereotype.Service;
 

@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.api.jira.projects;
+package de.alex.alexforjira.api.users.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+/** The user roles */
+public enum UserRole {
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class JiraProject {
+    /** A default user. He can map and execute tests, cycles and sync ALEX and Jira. */
+    DEFAULT,
 
-    private String id;
-
-    private String name;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    /** Can everything a default user can plus creating, editing and deleting users. */
+    ADMIN
 }

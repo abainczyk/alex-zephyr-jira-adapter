@@ -16,6 +16,7 @@
 
 package de.alex.alexforjira.api.executions;
 
+import de.alex.alexforjira.api.executions.entities.ExecutionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 /** Resource for handling the test execution. */
@@ -38,7 +38,7 @@ public class ExecutionResource {
     private final ExecutionService executionService;
 
     @Autowired
-    public ExecutionResource(ExecutionService executionService) {
+    public ExecutionResource(final ExecutionService executionService) {
         this.executionService = executionService;
     }
 

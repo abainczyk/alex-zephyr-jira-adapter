@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.api.executions;
+package de.alex.alexforjira.api.executions.entities;
 
 /** The status of the current test execution. */
 public class ExecutionStatus {

@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.api.users;
+package de.alex.alexforjira.api.jira.entities;
 
-/** The credentials of a user that are used to login. */
-public class UserCredentials {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-    /** The email of the user. */
-    private String email;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class JiraProject {
 
-    /** The password of the user. */
-    private String password;
+    private Long id;
 
-    public String getEmail() {
-        return email;
+    private String name;
+
+    public Long getId() {
+        return id;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getPassword() {
-        return password;
+    public String getName() {
+        return name;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setName(String name) {
+        this.name = name;
     }
 }

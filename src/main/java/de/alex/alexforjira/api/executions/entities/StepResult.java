@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.api.executions;
+package de.alex.alexforjira.api.executions.entities;
 
-public class Execution {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class StepResult {
+
+    public static final int PASSED = 1;
+
+    public static final int FAILED = 2;
 
     private Long id;
 

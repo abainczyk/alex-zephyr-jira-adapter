@@ -17,6 +17,8 @@
 package de.alex.alexforjira.api.jira.versions;
 
 import de.alex.alexforjira.api.jira.JiraEndpoints;
+import de.alex.alexforjira.security.ProjectForbiddenException;
+import de.alex.alexforjira.shared.JiraUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +40,12 @@ public class JiraVersionResource {
 
     private final JiraEndpoints jiraEndpoints;
 
+    private final JiraUtils jiraUtils;
+
     @Autowired
-    public JiraVersionResource(JiraEndpoints jiraEndpoints) {
+    public JiraVersionResource(final JiraEndpoints jiraEndpoints, final JiraUtils jiraUtils) {
         this.jiraEndpoints = jiraEndpoints;
+        this.jiraUtils = jiraUtils;
     }
 
     /**
@@ -54,8 +59,9 @@ public class JiraVersionResource {
             method = RequestMethod.GET,
             value = RESOURCE_URL
     )
-    public ResponseEntity getAll(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity getAll(@PathVariable("projectId") Long projectId) throws ProjectForbiddenException {
         log.info("Entering getAll(projectId: {})", projectId);
+        jiraUtils.checkIfProjectIsAllowed(projectId);
         final Response res = jiraEndpoints.versions(projectId).get();
 
         log.info("Leaving getAll() with status {}", res.getStatus());

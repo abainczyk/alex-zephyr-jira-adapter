@@ -5,6 +5,10 @@
         <h5>Select a project in ALEX</h5>
       </template>
 
+      <div class="alert alert-danger mb-3" v-if="errorMessage != null">
+        The project could not be mapped. {{errorMessage}}
+      </div>
+
       <p v-if="project != null">
         The project <strong>{{project.name}}</strong> is not connected to a project in ALEX yet.
         Please select a project you want to connect it to.
@@ -29,7 +33,7 @@
       </div>
 
       <template slot="modal-footer">
-        <button class="btn btn-primary" @click="close" v-bind:disabled="selectedProject == null">Ok</button>
+        <button class="btn btn-primary" @click="createMapping" v-bind:disabled="selectedProject == null">Ok</button>
         <button class="btn btn-outline-secondary" @click="dismiss">Cancel</button>
       </template>
     </b-modal>
@@ -45,7 +49,8 @@
       return {
         project: null,
         projects: [],
-        selectedProject: null
+        selectedProject: null,
+        errorMessage: null
       };
     },
     methods: {
@@ -61,7 +66,9 @@
         this.selectedProject = project;
       },
 
-      close() {
+      createMapping() {
+        this.errorMessage = null;
+
         if (this.selectedProject == null) {
           return;
         }
@@ -77,7 +84,9 @@
             this.$emit('close', projectMapping);
             this.$refs.modal.hide();
           })
-          .catch(console.error);
+          .catch(err => {
+            this.errorMessage = err.response.data.message;
+          });
       },
 
       dismiss() {

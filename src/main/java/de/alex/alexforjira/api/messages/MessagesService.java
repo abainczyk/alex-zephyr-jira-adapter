@@ -25,6 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service for accessing messages in the database.
+ */
 @Service
 public class MessagesService {
 
@@ -34,10 +37,17 @@ public class MessagesService {
     private final DSLContext dsl;
 
     @Autowired
-    public MessagesService(DSLContext dsl) {
+    public MessagesService(final DSLContext dsl) {
         this.dsl = dsl;
     }
 
+    /**
+     * Get all project related events.
+     *
+     * @param projectId
+     *         The ID of the Jira project.
+     * @return The events related to the project.
+     */
     @Transactional
     public List<IssueEvent> getByProjectId(final Long projectId) {
         return dsl.select()
@@ -50,6 +60,13 @@ public class MessagesService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Add a project related event to the database.
+     *
+     * @param event
+     *         The event to create.
+     * @return The created event.
+     */
     @Transactional
     public IssueEvent create(final IssueEvent event) {
         return dsl.insertInto(ISSUE_EVENT, ISSUE_EVENT.TYPE, ISSUE_EVENT.ISSUE_ID, ISSUE_EVENT.PROJECT_ID,
@@ -61,13 +78,27 @@ public class MessagesService {
                 .into(new IssueEvent());
     }
 
+    /**
+     * Delete all events by Jira project ID.
+     *
+     * @param projectId
+     *         The ID of the Jira project.
+     * @return The number of deleted events.
+     */
     @Transactional
-    public void deleteByProjectId(final Long projectId) {
-        dsl.delete(ISSUE_EVENT)
+    public int deleteByProjectId(final Long projectId) {
+        return dsl.delete(ISSUE_EVENT)
                 .where(ISSUE_EVENT.PROJECT_ID.eq(projectId))
                 .execute();
     }
 
+    /**
+     * Delete a single event.
+     *
+     * @param eventId
+     *         The ID of the event.
+     * @return The number of deleted events. Should be 1.
+     */
     @Transactional
     public int deleteById(final int eventId) {
         return dsl.delete(ISSUE_EVENT)

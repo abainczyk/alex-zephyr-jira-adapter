@@ -23,6 +23,7 @@ import de.alex.alexforjira.db.h2.tables.records.ProjectMappingRecord;
 import org.jooq.DSLContext;
 import org.jooq.Record;
 import org.jooq.Record1;
+import org.jooq.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,15 @@ public class ProjectMappingService {
      */
     @Transactional
     public ProjectMapping create(final ProjectMapping mapping) {
+        final Result<Record> r1 = dsl.select().from(PROJECT_MAPPING)
+                .where(PROJECT_MAPPING.ALEX_PROJECT_ID.eq(mapping.getAlexProjectId())
+                               .or(PROJECT_MAPPING.JIRA_PROJECT_ID.eq(mapping.getJiraProjectId())))
+                .fetch();
+
+        if (r1.size() != 0) {
+            throw new IllegalArgumentException("The Jira or ALEX project is already in use.");
+        }
+
         return dsl.insertInto(PROJECT_MAPPING, PROJECT_MAPPING.ALEX_PROJECT_ID, PROJECT_MAPPING.JIRA_PROJECT_ID)
                 .values(mapping.getAlexProjectId(), mapping.getJiraProjectId())
                 .returning()

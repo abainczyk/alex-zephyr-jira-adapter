@@ -18,7 +18,7 @@ package de.alex.alexforjira.api.alex;
 
 import de.alex.alexforjira.api.alex.entities.AlexJwt;
 import de.alex.alexforjira.api.alex.entities.AlexUserLogin;
-import de.alex.alexforjira.services.SettingsService;
+import de.alex.alexforjira.shared.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

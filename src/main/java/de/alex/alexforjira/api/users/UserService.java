@@ -16,6 +16,8 @@
 
 package de.alex.alexforjira.api.users;
 
+import de.alex.alexforjira.api.users.entities.UserCredentials;
+import de.alex.alexforjira.api.users.entities.UserRole;
 import de.alex.alexforjira.db.h2.tables.pojos.User;
 import org.jooq.DSLContext;
 import org.jooq.Record;

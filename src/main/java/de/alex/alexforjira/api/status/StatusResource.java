@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.alex.alexforjira.api.alex.AlexEndpoints;
 import de.alex.alexforjira.api.alex.entities.AlexUserLogin;
 import de.alex.alexforjira.api.jira.JiraEndpoints;
-import de.alex.alexforjira.services.SettingsService;
+import de.alex.alexforjira.shared.SettingsService;
 import org.glassfish.jersey.client.ClientProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

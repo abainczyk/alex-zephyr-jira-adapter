@@ -20,13 +20,15 @@ import de.alex.alexforjira.api.alex.AlexEndpoints;
 import de.alex.alexforjira.api.alex.AlexProjectsResource;
 import de.alex.alexforjira.api.alex.entities.AlexTestCase;
 import de.alex.alexforjira.api.alex.entities.AlexTestCaseStep;
-import de.alex.alexforjira.api.testmappings.TestMappingService;
-import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;
-import de.alex.alexforjira.api.executions.ExecutionConfig;
+import de.alex.alexforjira.api.executions.entities.ExecutionConfig;
 import de.alex.alexforjira.api.executions.ExecutionService;
 import de.alex.alexforjira.api.jira.JiraEndpoints;
 import de.alex.alexforjira.api.jira.entities.JiraTestStep;
-import de.alex.alexforjira.utils.RestError;
+import de.alex.alexforjira.api.testmappings.TestMappingService;
+import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;
+import de.alex.alexforjira.security.ProjectForbiddenException;
+import de.alex.alexforjira.shared.JiraUtils;
+import de.alex.alexforjira.shared.RestError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,15 +65,19 @@ public class JiraTestResource {
 
     private final JiraEndpoints jiraEndpoints;
 
+    private final JiraUtils jiraUtils;
+
     @Autowired
     public JiraTestResource(TestMappingService testMappingService,
                             ExecutionService executionService,
                             AlexEndpoints alexEndpoints,
-                            JiraEndpoints jiraEndpoints) {
+                            JiraEndpoints jiraEndpoints,
+                            JiraUtils jiraUtils) {
         this.testMappingService = testMappingService;
         this.executionService = executionService;
         this.alexEndpoints = alexEndpoints;
         this.jiraEndpoints = jiraEndpoints;
+        this.jiraUtils = jiraUtils;
     }
 
     @RequestMapping(
@@ -80,7 +86,10 @@ public class JiraTestResource {
     )
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public ResponseEntity getTestsByProjectId(@PathVariable("projectId") Long projectId) {
+    public ResponseEntity getTestsByProjectId(@PathVariable("projectId") Long projectId)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(projectId);
+
         final Response response = jiraEndpoints.tests(projectId).get();
         return ResponseEntity.status(response.getStatus()).body(response.readEntity(String.class));
     }
@@ -91,7 +100,10 @@ public class JiraTestResource {
     )
     public ResponseEntity execute(@PathVariable("projectId") Long projectId,
                                   @PathVariable("testId") Long testId,
-                                  @RequestBody ExecutionConfig config) {
+                                  @RequestBody ExecutionConfig config)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(projectId);
+
         try {
             executionService.executeTest(config);
             return ResponseEntity.ok().build();
@@ -106,7 +118,10 @@ public class JiraTestResource {
             method = RequestMethod.POST,
             value = RESOURCE_URL + "/{testId}/update"
     )
-    public ResponseEntity update(@PathVariable("projectId") Long projectId, @PathVariable("testId") Long testId) {
+    public ResponseEntity update(@PathVariable("projectId") Long projectId, @PathVariable("testId") Long testId)
+            throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(projectId);
+
         final TestMapping testMapping = testMappingService.findOneByJiraTestId(testId);
         if (testMapping == null) {
             return ResponseEntity.badRequest().body(new RestError(HttpStatus.BAD_REQUEST, "Test mapping not defined."));

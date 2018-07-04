@@ -22,7 +22,7 @@ import de.alex.alexforjira.api.alex.entities.AlexTestCase;
 import de.alex.alexforjira.api.jira.JiraEndpoints;
 import de.alex.alexforjira.api.jira.entities.JiraIssue;
 import de.alex.alexforjira.api.jira.entities.JiraJqlIssueResult;
-import de.alex.alexforjira.api.jira.projects.JiraProject;
+import de.alex.alexforjira.api.jira.entities.JiraProject;
 import de.alex.alexforjira.api.projectmappings.ProjectMappingService;
 import de.alex.alexforjira.api.testmappings.TestMappingService;
 import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;
@@ -100,14 +100,14 @@ public class SyncService {
             final Response res = jiraEndpoints.projects().get();
 
             if (res.getStatus() == Response.Status.OK.getStatusCode()) {
-                final List<String> ids = res.readEntity(new GenericType<List<JiraProject>>() {
+                final List<Long> ids = res.readEntity(new GenericType<List<JiraProject>>() {
                 }).stream()
                         .map(JiraProject::getId)
                         .collect(Collectors.toList());
 
                 // if the project id does not exists, delete everything related to the project.
                 jiraProjectIds.forEach(id -> {
-                    if (!ids.contains(String.valueOf(id))) {
+                    if (!ids.contains(id)) {
                         log.info("delete by Jira project: {}", id);
                         projectMappingService.deleteByJiraProjectId(id);
                     }

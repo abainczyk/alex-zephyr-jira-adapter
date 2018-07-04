@@ -21,9 +21,9 @@ import de.alex.alexforjira.api.alex.entities.AlexTestCase;
 import de.alex.alexforjira.api.jira.JiraEndpoints;
 import de.alex.alexforjira.api.jira.entities.JiraIssue;
 import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;
-import de.alex.alexforjira.utils.RestError;
+import de.alex.alexforjira.security.ProjectForbiddenException;
+import de.alex.alexforjira.shared.JiraUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -48,13 +46,17 @@ public class TestMappingResource {
 
     private final JiraEndpoints jiraEndpoints;
 
+    private final JiraUtils jiraUtils;
+
     @Autowired
     public TestMappingResource(final TestMappingService testMappingService,
                                final AlexEndpoints alexEndpoints,
-                               final JiraEndpoints jiraEndpoints) {
+                               final JiraEndpoints jiraEndpoints,
+                               final JiraUtils jiraUtils) {
         this.testMappingService = testMappingService;
         this.alexEndpoints = alexEndpoints;
         this.jiraEndpoints = jiraEndpoints;
+        this.jiraUtils = jiraUtils;
     }
 
     @RequestMapping(
@@ -62,7 +64,8 @@ public class TestMappingResource {
             value = RESOURCE_URL,
             produces = MediaType.APPLICATION_JSON
     )
-    public ResponseEntity getAll(final @PathVariable("jiraProjectId") Long jiraProjectId) {
+    public ResponseEntity getAll(final @PathVariable("jiraProjectId") Long jiraProjectId) throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(jiraProjectId);
         return ResponseEntity.ok(testMappingService.findByJiraProjectId(jiraProjectId));
     }
 
@@ -73,7 +76,9 @@ public class TestMappingResource {
             produces = MediaType.APPLICATION_JSON
     )
     public ResponseEntity create(final @PathVariable("jiraProjectId") Long jiraProjectId,
-                                 final @RequestBody TestMapping testMapping) {
+                                 final @RequestBody TestMapping testMapping) throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(jiraProjectId);
+        jiraUtils.checkIfProjectIsAllowed(testMapping.getJiraProjectId());
         final Long jiraTestId = testMapping.getJiraTestId();
 
         final TestMapping existingTestMapping = testMappingService.findOneByJiraTestId(jiraTestId);
@@ -114,7 +119,8 @@ public class TestMappingResource {
             value = RESOURCE_URL + "/{mappingId}"
     )
     public ResponseEntity delete(final @PathVariable("jiraProjectId") Long jiraProjectId,
-                                 final @PathVariable("mappingId") int mappingId) {
+                                 final @PathVariable("mappingId") int mappingId) throws ProjectForbiddenException {
+        jiraUtils.checkIfProjectIsAllowed(jiraProjectId);
         testMappingService.deleteById(mappingId);
         return ResponseEntity.noContent().build();
     }

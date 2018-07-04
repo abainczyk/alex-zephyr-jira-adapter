@@ -16,8 +16,9 @@
 
 package de.alex.alexforjira.api.users;
 
+import de.alex.alexforjira.api.users.entities.UserCredentials;
 import de.alex.alexforjira.db.h2.tables.pojos.User;
-import de.alex.alexforjira.utils.RestError;
+import de.alex.alexforjira.shared.RestError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

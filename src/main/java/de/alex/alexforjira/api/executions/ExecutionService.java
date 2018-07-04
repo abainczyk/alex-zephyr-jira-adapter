@@ -19,11 +19,16 @@ package de.alex.alexforjira.api.executions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.alex.alexforjira.api.alex.AlexEndpoints;
+import de.alex.alexforjira.api.executions.entities.Execution;
+import de.alex.alexforjira.api.executions.entities.ExecutionConfig;
+import de.alex.alexforjira.api.executions.entities.ExecutionQueueItem;
+import de.alex.alexforjira.api.executions.entities.ExecutionStatus;
+import de.alex.alexforjira.api.executions.entities.StepResult;
 import de.alex.alexforjira.api.testmappings.TestMappingService;
 import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;
 import de.alex.alexforjira.api.jira.JiraEndpoints;
 import de.alex.alexforjira.api.jira.entities.JiraExecution;
-import de.alex.alexforjira.services.SettingsService;
+import de.alex.alexforjira.shared.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

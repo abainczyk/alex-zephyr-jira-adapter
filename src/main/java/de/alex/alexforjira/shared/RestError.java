@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.utils;
+package de.alex.alexforjira.shared;
 
 import org.springframework.http.HttpStatus;
 

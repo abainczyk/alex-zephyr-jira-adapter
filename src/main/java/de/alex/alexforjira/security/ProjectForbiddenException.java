@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.api.users;
+package de.alex.alexforjira.security;
 
-/** The user roles */
-public enum UserRole {
-
-    /** A default user. He can map and execute tests, cycles and sync ALEX and Jira. */
-    DEFAULT,
-
-    /** Can everything a default user can plus creating, editing and deleting users. */
-    ADMIN
+/**
+ * Exception to throw if a project is accessed that is not configured in the config file.
+ */
+public class ProjectForbiddenException extends Exception {
+    public ProjectForbiddenException(String message) {
+        super(message);
+    }
 }
