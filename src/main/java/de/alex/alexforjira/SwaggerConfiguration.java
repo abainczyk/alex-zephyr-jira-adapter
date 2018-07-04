@@ -27,8 +27,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 /**
  * The configuration for Swagger. The documentation will be available at:
  * <p>
- * http://.../v2/api-docs - The api JSON.
- * http://.../swagger-ui.html - Swagger UI.
+ * http://.../v2/api-docs - The api JSON. http://.../swagger-ui.html - Swagger UI.
  */
 @Configuration
 @EnableSwagger2

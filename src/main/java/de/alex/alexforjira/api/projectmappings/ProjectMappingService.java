@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.Produces;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +45,9 @@ public class ProjectMappingService {
     private final MessagesService messagesService;
 
     @Autowired
-    public ProjectMappingService(DSLContext dsl, TestMappingService testMappingService, MessagesService messagesService) {
+    public ProjectMappingService(DSLContext dsl,
+                                 TestMappingService testMappingService,
+                                 MessagesService messagesService) {
         this.dsl = dsl;
         this.testMappingService = testMappingService;
         this.messagesService = messagesService;

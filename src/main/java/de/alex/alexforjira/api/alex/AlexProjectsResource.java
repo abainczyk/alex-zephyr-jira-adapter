@@ -16,8 +16,8 @@
 
 package de.alex.alexforjira.api.alex;
 
-import de.alex.alexforjira.db.h2.tables.pojos.ProjectMapping;
 import de.alex.alexforjira.api.projectmappings.ProjectMappingService;
+import de.alex.alexforjira.db.h2.tables.pojos.ProjectMapping;
 import de.alex.alexforjira.shared.RestError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

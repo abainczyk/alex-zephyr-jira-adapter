@@ -67,18 +67,40 @@ public class SettingsService {
         return properties.getProperty("alex.url");
     }
 
+    public String getBrowserName() {
+        return properties.getProperty("app.browser.name");
+    }
+
+    public int getBrowserWidth() {
+        return Integer.valueOf(properties.getProperty("app.browser.width"));
+    }
+
+    public int getBrowserHeight() {
+        return Integer.valueOf(properties.getProperty("app.browser.height"));
+    }
+
+    public boolean getBrowserHeadless() {
+        return Boolean.valueOf(properties.getProperty("app.browser.headless"));
+    }
+
     /**
      * Check if the properties are valid.
      *
      * @return If all properties are valid.
      */
     public boolean isValid() {
-        // TODO better validation
         return !getJiraUsername().trim().equals("")
                 && !getJiraUrl().trim().equals("")
                 && !getAlexEmail().trim().equals("")
                 && !getAlexUrl().trim().equals("")
                 && !getAlexPassword().trim().equals("")
-                && !getAppUrl().trim().equals("");
+                && !getAppUrl().trim().equals("")
+                && isBrowserValid();
+    }
+
+    private boolean isBrowserValid() {
+        return !getBrowserName().trim().equals("")
+                && getBrowserWidth() > 0
+                && getBrowserHeight() > 0;
     }
 }

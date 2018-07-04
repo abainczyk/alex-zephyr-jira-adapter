@@ -65,7 +65,8 @@ public class JiraProjectResource {
     public ResponseEntity getAll() {
         log.info("Entering getAll()");
         final Response res = jiraEndpoints.projects().get();
-        final List<JiraProject> projects = res.readEntity(new GenericType<List<JiraProject>>(){});
+        final List<JiraProject> projects = res.readEntity(new GenericType<List<JiraProject>>() {
+        });
 
         log.info("Leaving getAll() with status {}", res.getStatus());
         return ResponseEntity.status(res.getStatus()).body(jiraUtils.filterAllowedProjects(projects));

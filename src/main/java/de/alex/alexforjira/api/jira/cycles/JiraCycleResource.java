@@ -16,8 +16,8 @@
 
 package de.alex.alexforjira.api.jira.cycles;
 
-import de.alex.alexforjira.api.executions.entities.ExecutionConfig;
 import de.alex.alexforjira.api.executions.ExecutionService;
+import de.alex.alexforjira.api.executions.entities.ExecutionConfig;
 import de.alex.alexforjira.api.jira.JiraEndpoints;
 import de.alex.alexforjira.api.jira.entities.JiraExecution;
 import de.alex.alexforjira.security.ProjectForbiddenException;

@@ -24,10 +24,10 @@ import de.alex.alexforjira.api.executions.entities.ExecutionConfig;
 import de.alex.alexforjira.api.executions.entities.ExecutionQueueItem;
 import de.alex.alexforjira.api.executions.entities.ExecutionStatus;
 import de.alex.alexforjira.api.executions.entities.StepResult;
-import de.alex.alexforjira.api.testmappings.TestMappingService;
-import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;
 import de.alex.alexforjira.api.jira.JiraEndpoints;
 import de.alex.alexforjira.api.jira.entities.JiraExecution;
+import de.alex.alexforjira.api.testmappings.TestMappingService;
+import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;
 import de.alex.alexforjira.shared.SettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,13 +56,13 @@ public class ExecutionService {
 
     private final Client client = ClientBuilder.newClient();
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    /** If the test execution is in progress. */
-    private boolean active = false;
+    private final ObjectMapper objectMapper;
 
     /** The queue of tests to execute. */
     private final BlockingDeque<ExecutionQueueItem> executionQueue;
+
+    /** If the test execution is in progress. */
+    private boolean active;
 
     @Autowired
     public ExecutionService(JiraEndpoints jiraEndpoints,
@@ -74,7 +74,9 @@ public class ExecutionService {
         this.testMappingService = testMappingService;
         this.settingsService = settingsService;
 
+        this.objectMapper = new ObjectMapper();
         this.executionQueue = new LinkedBlockingDeque<>();
+        this.active = false;
     }
 
     public void executeTest(ExecutionConfig config) throws Exception {
@@ -111,12 +113,12 @@ public class ExecutionService {
     }
 
     private JiraExecution createExecutionInJira(Long projectId, Long testId) throws Exception {
-        final String payload = "{" +
-                "\"cycleId\":\"-1\"," +
-                "\"issueId\":\"" + testId + "\"," +
-                "\"projectId\":\"" + projectId + "\"," +
-                "\"versionId\":\"-1\"" +
-                "}";
+        final String payload = "{"
+                + "\"cycleId\":\"-1\","
+                + "\"issueId\":\"" + testId + "\","
+                + "\"projectId\":\"" + projectId + "\","
+                + "\"versionId\":\"-1\"" // -1 means execute test not in cycle
+                + "}";
 
         final Response response = jiraEndpoints.execution().post(Entity.json(payload));
 
@@ -130,20 +132,20 @@ public class ExecutionService {
     }
 
     private void executeTestInAlex(ExecutionConfig config, TestMapping testMapping) throws Exception {
-        final String testConfig = "{" +
-                "\"tests\":[" + testMapping.getAlexTestId() + "]" +
-                ",\"createReport\": true" +
-                ",\"url\": " + config.getAlexUrlId() +
-                ",\"driverConfig\":{" +
-                "   \"width\":1280" +
-                "   ,\"height\":1024" +
-                "   ,\"implicitlyWait\":0" +
-                "   ,\"pageLoadTimeout\":10" +
-                "   ,\"scriptTimeout\":10" +
-                "   ,\"name\":\"firefox\"" +
-                "   ,\"headless\":false" +
-                "   ,\"xvfbPort\":null" +
-                "}}";
+        final String testConfig = "{"
+                + "\"tests\":[" + testMapping.getAlexTestId() + "]"
+                + ",\"createReport\": true"
+                + ",\"url\": " + config.getAlexUrlId()
+                + ",\"driverConfig\":{"
+                + "   \"width\":" + settingsService.getBrowserWidth()
+                + "   ,\"height\":" + settingsService.getBrowserHeight()
+                + "   ,\"implicitlyWait\":0"
+                + "   ,\"pageLoadTimeout\":10"
+                + "   ,\"scriptTimeout\":10"
+                + "   ,\"name\":\"" + settingsService.getBrowserName() + "\""
+                + "   ,\"headless\":" + settingsService.getBrowserHeadless()
+                + "   ,\"xvfbPort\":null"
+                + "}}";
 
         final Response response = alexEndpoints.executeTest(testMapping.getAlexProjectId())
                 .post(Entity.json(testConfig));

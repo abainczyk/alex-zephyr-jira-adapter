@@ -56,6 +56,16 @@ The configuration for the adapter is specified in a config `.ini` file:
 # Add the URL without trailing "/"
 app.url=
 
+# Browser specific settings where tests are executed.
+# The name of the browser in [chrome, firefox, htmlunit]. Make sure the browser is configured in ALEX.
+app.browser.name=
+# The width of the browser window. Has to be > 0
+app.browser.width=
+# The height of the browser window. Has to be > 0
+app.browser.height=
+# If the tests should be executed in headless mode in [true, false]. Default should be 'true'-
+app.browser.headless=
+
 # The URL where ALEX is reached without trailing "/".
 alex.url=
 # The credentials that are used to authorize in ALEX.
