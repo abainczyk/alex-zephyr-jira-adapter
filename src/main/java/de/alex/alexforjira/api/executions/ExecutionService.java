@@ -121,7 +121,7 @@ public class ExecutionService {
                 + "\"cycleId\":\"-1\","
                 + "\"issueId\":\"" + testId + "\","
                 + "\"projectId\":\"" + projectId + "\","
-                + "\"versionId\":\"-1\"" // -1 means execute test not in cycle
+                + "\"versionId\":\"-1\"" // -1 means execute test add hoc
                 + "}";
 
         final Response response = jiraEndpoints.execution().post(Entity.json(payload));
@@ -205,7 +205,7 @@ public class ExecutionService {
 
                         final String report = "Report: " + settingsService.getAlexUrl() + "/#!/redirect?to=" + URLEncoder.encode("/projects/" + testMapping.getAlexProjectId() + "/tests/reports/" + reportJson.get("id").asText(), "UTF-8");
                         final AlexProjectUrl url = alexProject.getUrls().stream().filter(u -> u.getId().equals(queueItem.getConfig().getAlexUrlId())).findFirst().get();
-                        final String stage = "Stage: " + (url.getName() == null ? "" : url.getName() + " ") + "(" + url.getName() + ")";
+                        final String stage = "Stage: " + (url.getName() == null ? "" : url.getName() + " ") + "(" + url.getUrl() + ")";
 
                         exec.setComment(stage + "\n" + report);
                         updateExecution(exec);

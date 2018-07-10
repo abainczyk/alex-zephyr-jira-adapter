@@ -130,45 +130,74 @@ public class WebhookResource {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Handle incoming events related to projects in ALEX.
+     *
+     * @param data
+     *         The event data.
+     * @return 200 - OK.
+     */
     @RequestMapping(
             method = RequestMethod.POST,
             value = RESOURCE_URL + "/alex/projects"
     )
-    public ResponseEntity onAlexProjectEvent(final @RequestBody String data) throws Exception {
-        final JsonNode projectEvent = objectMapper.readTree(data);
-        switch (projectEvent.get("eventType").asText()) {
-            case "PROJECT_DELETED":
-                final Long projectId = projectEvent.get("data").asLong();
-                testMappingService.deleteAllByAlexProjectId(projectId);
-                projectMappingService.deleteByAlexProjectId(projectId);
-                break;
-            default:
-                break;
+    public ResponseEntity onAlexProjectEvent(final @RequestBody String data) {
+        log.info("Entering onAlexProjectEvent(data: {})", data);
+
+        try {
+            final JsonNode projectEvent = objectMapper.readTree(data);
+            switch (projectEvent.get("eventType").asText()) {
+                case "PROJECT_DELETED":
+                    final Long projectId = projectEvent.get("data").asLong();
+                    testMappingService.deleteAllByAlexProjectId(projectId);
+                    projectMappingService.deleteByAlexProjectId(projectId);
+                    break;
+                default:
+                    break;
+            }
+        } catch (IOException e) {
+            log.error("Failed to parse event data");
         }
 
+        log.info("leaving onAlexProjectEvent() with status {}", HttpStatus.OK);
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Handle incoming events related to tests in ALEX.
+     *
+     * @param data
+     *         The event data.
+     * @return 200 - OK.
+     */
     @RequestMapping(
             method = RequestMethod.POST,
             value = RESOURCE_URL + "/alex/tests"
     )
-    public ResponseEntity onAlexTestEvent(final @RequestBody String data) throws Exception {
-        final JsonNode testEvent = objectMapper.readTree(data);
-        final Long testId;
-        switch (testEvent.get("eventType").asText()) {
-            case "TEST_DELETED":
-                testId = testEvent.get("data").asLong();
-                testMappingService.deleteByAlexTestId(testId);
-                break;
-            case "TEST_UPDATED":
-                testId = testEvent.get("data").get("id").asLong();
-                testMappingService.incrementTestUpdates(testId);
-                break;
-            default:
-                break;
+    public ResponseEntity onAlexTestEvent(final @RequestBody String data) {
+        log.info("Entering onAlexTestEvent(data: {})", data);
+
+        try {
+            final JsonNode testEvent = objectMapper.readTree(data);
+            final Long testId;
+
+            switch (testEvent.get("eventType").asText()) {
+                case "TEST_DELETED":
+                    testId = testEvent.get("data").asLong();
+                    testMappingService.deleteByAlexTestId(testId);
+                    break;
+                case "TEST_UPDATED":
+                    testId = testEvent.get("data").get("id").asLong();
+                    testMappingService.incrementTestUpdates(testId);
+                    break;
+                default:
+                    break;
+            }
+        } catch (IOException e) {
+            log.error("Failed to parse event data");
         }
 
+        log.info("leaving onAlexTestEvent() with status {}", HttpStatus.OK);
         return ResponseEntity.ok().build();
     }
 }

@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package de.alex.alexforjira.api.jira.cycles;
+package de.alex.alexforjira.api.jira.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import de.alex.alexforjira.api.jira.entities.JiraExecution;
+
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class JiraCycleFolder {
+public class JiraCycleFolderExecution {
 
-    private Long folderId;
+    private List<JiraExecution> executions;
 
-    public Long getFolderId() {
-        return folderId;
+    public List<JiraExecution> getExecutions() {
+        return executions;
     }
 
-    public void setFolderId(Long folderId) {
-        this.folderId = folderId;
+    public void setExecutions(List<JiraExecution> executions) {
+        this.executions = executions;
     }
 }

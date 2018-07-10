@@ -38,6 +38,13 @@ public class TestMappingService {
         this.dsl = dsl;
     }
 
+    /**
+     * Get a test mapping by a Jira test ID
+     *
+     * @param jiraTestId
+     *         The ID of the test in Jira.
+     * @return The test mapping or null if none found.
+     */
     @Transactional
     public TestMapping findOneByJiraTestId(final Long jiraTestId) {
         final Record record = dsl.select()
@@ -48,6 +55,13 @@ public class TestMappingService {
         return record == null ? null : record.into(new TestMapping());
     }
 
+    /**
+     * Get all test mappings by ALEX project ID.
+     *
+     * @param alexProjectId
+     *         The ID of the ALEX project.
+     * @return All related test mappings.
+     */
     @Transactional
     public List<TestMapping> findByAlexProjectId(final Long alexProjectId) {
         return dsl.select()
@@ -57,6 +71,13 @@ public class TestMappingService {
                 .map(record -> record.into(new TestMapping()));
     }
 
+    /**
+     * Get all test mappings by Jira project ID.
+     *
+     * @param jiraProjectId
+     *         The ID of the Jira project.
+     * @return All related test mappings.
+     */
     @Transactional
     public List<TestMapping> findByJiraProjectId(final Long jiraProjectId) {
         return dsl.select()
@@ -66,6 +87,13 @@ public class TestMappingService {
                 .map(record -> record.into(new TestMapping()));
     }
 
+    /**
+     * Create a new test mapping.
+     *
+     * @param mapping
+     *         The test mapping to create.
+     * @return The created test mapping.
+     */
     @Transactional
     public TestMapping create(final TestMapping mapping) {
         return dsl.insertInto(TEST_MAPPING, TEST_MAPPING.ALEX_PROJECT_ID, TEST_MAPPING.ALEX_TEST_ID,
@@ -77,6 +105,12 @@ public class TestMappingService {
                 .into(new TestMapping());
     }
 
+    /**
+     * Delete all test mappings by a Jira project ID.
+     *
+     * @param jiraProjectId
+     *         The ID of the project.
+     */
     @Transactional
     public void deleteAllByJiraProjectId(final Long jiraProjectId) {
         dsl.delete(TEST_MAPPING)
@@ -84,6 +118,12 @@ public class TestMappingService {
                 .execute();
     }
 
+    /**
+     * Delete all test mappings by a ALEX project ID.
+     *
+     * @param alexProjectId
+     *         The ID of the project.
+     */
     @Transactional
     public void deleteAllByAlexProjectId(final Long alexProjectId) {
         dsl.delete(TEST_MAPPING)
@@ -91,6 +131,12 @@ public class TestMappingService {
                 .execute();
     }
 
+    /**
+     * Delete a single test mapping by a ALEX test ID.
+     *
+     * @param alexTestId
+     *         The ID of the test.
+     */
     @Transactional
     public void deleteByAlexTestId(final Long alexTestId) {
         dsl.delete(TEST_MAPPING)
@@ -98,20 +144,39 @@ public class TestMappingService {
                 .execute();
     }
 
+    /**
+     * Delete a single test mapping by a Jira test ID.
+     *
+     * @param jiraTestId
+     *         The ID of the test.
+     */
     @Transactional
-    public int deleteByJiraTestId(final Long jiraTestId) {
-        return dsl.delete(TEST_MAPPING)
+    public void deleteByJiraTestId(final Long jiraTestId) {
+        dsl.delete(TEST_MAPPING)
                 .where(TEST_MAPPING.JIRA_TEST_ID.eq(jiraTestId))
                 .execute();
     }
 
+    /**
+     * Delete a test mapping by its ID.
+     *
+     * @param id
+     *         The ID of the test mapping.
+     */
     @Transactional
-    public int deleteById(final int id) {
-        return dsl.delete(TEST_MAPPING)
+    public void deleteById(final int id) {
+        dsl.delete(TEST_MAPPING)
                 .where(TEST_MAPPING.ID.eq(id))
                 .execute();
     }
 
+    /**
+     * Check if there exists a test mapping for a test in Jira.
+     *
+     * @param jiraTestId
+     *         The ID of the test in Jira.
+     * @return If a mapping for the test exists.
+     */
     @Transactional
     public boolean existsByTestId(Long jiraTestId) {
         return dsl.select().from(TEST_MAPPING)
@@ -120,6 +185,12 @@ public class TestMappingService {
                 .size() > 0;
     }
 
+    /**
+     * Increment the counter for updates of a test mapping.
+     *
+     * @param alexTestId
+     *         The ID of the test in ALEX.
+     */
     @Transactional
     public void incrementTestUpdates(final Long alexTestId) {
         dsl.update(TEST_MAPPING)
@@ -128,6 +199,12 @@ public class TestMappingService {
                 .execute();
     }
 
+    /**
+     * Reset the counter for updates of a test mapping.
+     *
+     * @param alexTestId
+     *         The ID of the test in ALEX.
+     */
     @Transactional
     public void resetTestUpdates(final Long alexTestId) {
         dsl.update(TEST_MAPPING)

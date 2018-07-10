@@ -16,9 +16,12 @@
 
 package de.alex.alexforjira.api.users;
 
+import de.alex.alexforjira.api.projectmappings.ProjectMappingResource;
 import de.alex.alexforjira.api.users.entities.UserCredentials;
 import de.alex.alexforjira.db.h2.tables.pojos.User;
 import de.alex.alexforjira.shared.RestError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +39,8 @@ import javax.ws.rs.core.MediaType;
  */
 @RestController
 public class UserResource {
+
+    private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
     private static final String RESOURCE_URL = "/rest/users";
 

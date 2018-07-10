@@ -88,9 +88,11 @@ public class JiraTestResource {
     @Produces(MediaType.APPLICATION_JSON)
     public ResponseEntity getTestsByProjectId(@PathVariable("projectId") Long projectId)
             throws ProjectForbiddenException {
+        log.info("Entering getTestsByProjectId(projectId: {})", projectId);
         jiraUtils.checkIfProjectIsAllowed(projectId);
 
         final Response response = jiraEndpoints.tests(projectId).get();
+        log.info("Leaving getTestsByProjectId() with status {}", response.getStatus());
         return ResponseEntity.status(response.getStatus()).body(response.readEntity(String.class));
     }
 
@@ -102,14 +104,17 @@ public class JiraTestResource {
                                   @PathVariable("testId") Long testId,
                                   @RequestBody ExecutionConfig config)
             throws ProjectForbiddenException {
+        log.info("Entering execute(projectId: {}, testId: {}, config: {})", projectId, testId, config);
         jiraUtils.checkIfProjectIsAllowed(projectId);
 
         try {
             executionService.executeTest(config);
+            log.info("Leaving execute() with status {}", HttpStatus.OK);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
             final RestError error = new RestError(HttpStatus.BAD_REQUEST, e.getMessage());
+            log.error("Leaving execute() with error ", error);
             return ResponseEntity.badRequest().body(error);
         }
     }
@@ -120,6 +125,7 @@ public class JiraTestResource {
     )
     public ResponseEntity update(@PathVariable("projectId") Long projectId, @PathVariable("testId") Long testId)
             throws ProjectForbiddenException {
+        log.info("Entering update(projectId: {}, testId: {})", projectId, testId);
         jiraUtils.checkIfProjectIsAllowed(projectId);
 
         final TestMapping testMapping = testMappingService.findOneByJiraTestId(testId);
@@ -135,6 +141,8 @@ public class JiraTestResource {
             final LinkedList<JiraTestStep> jiraSteps = res2.readEntity(new GenericType<LinkedList<JiraTestStep>>() {
             });
 
+            // if there are more test steps in Jira than in ALEX, we remove the last |#stepsJira - #stepsAlex| test
+            // steps in Jira
             while (alexTest.getSteps().size() < jiraSteps.size()) {
                 final JiraTestStep lastStep = jiraSteps.removeLast();
 
@@ -144,6 +152,8 @@ public class JiraTestResource {
                 }
             }
 
+            // if there are more test steps in ALEX than in Jira, we create |#stepsAlex - #stepsJira| additional
+            // dummy test steps in Jira
             long orderId = alexTest.getSteps().size() + 1;
             while (alexTest.getSteps().size() > jiraSteps.size()) {
                 final JiraTestStep jiraStep = new JiraTestStep();
@@ -162,19 +172,20 @@ public class JiraTestResource {
                 jiraSteps.add(res.readEntity(JiraTestStep.class));
             }
 
+            // update the test steps
             for (int i = 0; i < alexTest.getSteps().size(); i++) {
                 final AlexTestCaseStep alexStep = alexTest.getSteps().get(i);
                 final JiraTestStep jiraStep = jiraSteps.get(i);
 
-                String description = alexStep.getSymbol().getDescription();
+                String description = alexStep.getpSymbol().getSymbol().getDescription();
                 description = description == null ? "" : "\n" + description;
 
                 jiraStep.setOrderId((long) i);
-                jiraStep.setStep(alexStep.getSymbol().getName() + description);
+                jiraStep.setStep(alexStep.getpSymbol().getSymbol().getName() + description);
                 jiraStep.setResult(alexStep.getExpectedResult());
 
-                List<String> data = new ArrayList<>();
-                alexStep.getVisibleParameterValues().forEach(val -> {
+                final List<String> data = new ArrayList<>();
+                alexStep.getpSymbol().getVisibleParameterValues().forEach(val -> {
                     data.add(val.getParameter().getName() + ": " + val.getValue());
                 });
 
@@ -188,9 +199,12 @@ public class JiraTestResource {
 
             testMappingService.resetTestUpdates(alexTest.getId());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new RestError(HttpStatus.BAD_REQUEST, e.getMessage()));
+            final RestError error = new RestError(HttpStatus.BAD_REQUEST, e.getMessage());
+            log.error("Leaving update() with error {}", error);
+            return ResponseEntity.badRequest().body(error);
         }
 
+        log.info("Leaving update() with status {}", HttpStatus.OK);
         return ResponseEntity.ok().build();
     }
 }

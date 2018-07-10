@@ -84,15 +84,22 @@ public class StatusResource {
         boolean authenticatedInJira = isAuthenticatedInJira();
         boolean connectedToAlex = isConnectedToAlex();
         boolean authenticatedInAlex = isAuthenticatedInAlex();
+        boolean zapiInError;
+        JsonNode zapiStatus;
 
-        // check if the zapi add-on is enabled
-        final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/moduleInfo")
-                .request(MediaType.APPLICATION_JSON)
-                .header("Authorization", jiraEndpoints.auth())
-                .get();
+        try {
+            // check if the zapi add-on is enabled
+            final Response response = client.target(jiraEndpoints.url() + "/zapi/latest/moduleInfo")
+                    .request(MediaType.APPLICATION_JSON)
+                    .header("Authorization", jiraEndpoints.auth())
+                    .get();
 
-        final JsonNode zapiStatus = objectMapper.readTree(response.readEntity(String.class));
-        final boolean zapiInError = zapiStatus.has("errorId");
+            zapiStatus = objectMapper.readTree(response.readEntity(String.class));
+            zapiInError = zapiStatus.has("errorId");
+        } catch (Exception e) {
+            zapiStatus = objectMapper.readTree("{}");
+            zapiInError = true;
+        }
 
         final String data = "{"
                 + "\"jira\":" + "{"

@@ -34,6 +34,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
+/**
+ * The REST resource for project mappings.
+ */
 @RestController
 public class ProjectMappingResource {
 
@@ -46,11 +49,17 @@ public class ProjectMappingResource {
     private final JiraUtils jiraUtils;
 
     @Autowired
-    public ProjectMappingResource(final ProjectMappingService projectMappingService, final JiraUtils jiraUtils) {
+    public ProjectMappingResource(final ProjectMappingService projectMappingService,
+                                  final JiraUtils jiraUtils) {
         this.projectMappingService = projectMappingService;
         this.jiraUtils = jiraUtils;
     }
 
+    /**
+     * Get all project mappings.
+     *
+     * @return The list of project mappings.
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             value = RESOURCE_URL,
@@ -63,6 +72,15 @@ public class ProjectMappingResource {
         return ResponseEntity.ok(mappings);
     }
 
+    /**
+     * Create a new project mapping.
+     *
+     * @param projectMapping
+     *         The project mapping.
+     * @return 201 - Created with the created mapping, 400 - Bad request if the project is already mapped.
+     * @throws ProjectForbiddenException
+     *         If the project to map may not be accessed.
+     */
     @RequestMapping(
             method = RequestMethod.POST,
             value = RESOURCE_URL,
@@ -83,6 +101,15 @@ public class ProjectMappingResource {
         }
     }
 
+    /**
+     * Get a project mapping by Jira project ID.
+     *
+     * @param projectId
+     *         The ID of the Jira project.
+     * @return The mapping.
+     * @throws ProjectForbiddenException
+     *         If the project may not be accessed.
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             value = RESOURCE_URL + "/byJiraProjectId/{projectId}",
@@ -90,11 +117,22 @@ public class ProjectMappingResource {
     )
     public ResponseEntity<ProjectMapping> getByJiraProjectId(@PathVariable("projectId") final Long projectId)
             throws ProjectForbiddenException {
+        log.info("Entering getByJiraProjectId(projectId: {})", projectId);
+
         jiraUtils.checkIfProjectIsAllowed(projectId);
         final ProjectMapping mapping = projectMappingService.getByJiraProjectId(projectId);
+
+        log.info("Leaving getByJiraProjectId() with {}", mapping);
         return mapping == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(mapping);
     }
 
+    /**
+     * Delete a project mapping.
+     *
+     * @param mappingId
+     *         The ID of the mapping.
+     * @return 204 - No content on success, 404 - Not found if the mapping could not be found.
+     */
     @RequestMapping(
             method = RequestMethod.DELETE,
             value = RESOURCE_URL + "/{mappingId}"

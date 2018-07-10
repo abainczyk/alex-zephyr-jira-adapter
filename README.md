@@ -8,6 +8,9 @@ The adapter is coupled with the corresponding [add-on][alex-plugin] and is devel
 * H2 Database
 * Jooq 
  
+## Dependencies
+
+* ALEX v1.6.0
  
 ## Requirements 
  
@@ -38,10 +41,10 @@ git clone ...
 cd alex-zephyr-jira-adapter
 
 # 3. Build the application
-mvn clean install  
+mvn clean install "-Pcreate-frontend"
 ``` 
  
-Afterwards, the file `alex-zephyr-jira-adapter-1.0.0-SNAPSHOT.jar` is located in the `target` directory. 
+Afterwards, the file `alex-zephyr-jira-adapter-1.0.0.jar` is located in the `target` directory. 
 Move the file to the location where the adapter should be installed. 
  
  
@@ -100,7 +103,7 @@ Instead, open a terminal an navigate to where the jar file is located.
 Then, execute the following command in the terminal to start the application: 
  
 ```bash 
-java -jar jira-zephyr-jira-adapter-1.0.0-SNAPSHOT.jar -app.config-file="C:\...\config.ini"
+java -jar jira-zephyr-jira-adapter-1.0.0-SNAPSHOT.jar --app.config-file="C:\...\config.ini"
 ``` 
  
 Then, open a browser and go to *http://localhost:8080*. 

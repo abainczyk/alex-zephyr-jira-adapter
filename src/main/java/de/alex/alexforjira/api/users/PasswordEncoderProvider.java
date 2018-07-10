@@ -20,7 +20,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-/** The provider for the password encoder. */
+/** The provider for the password encoder so that there exists only one instance. */
 @Service
 public class PasswordEncoderProvider {
 

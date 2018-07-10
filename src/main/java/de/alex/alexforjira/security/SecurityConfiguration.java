@@ -28,6 +28,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
@@ -94,14 +95,21 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .antMatchers("/rest/status").permitAll()
                 .antMatchers("/rest/users/signIn").permitAll()
                 .antMatchers("/rest/admin/**").hasRole(UserRole.ADMIN.toString())
-                .anyRequest().authenticated()
+                .antMatchers("/rest/**").authenticated()
                 .and()
                 .httpBasic();
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        // disable authorization for the start page and for incoming webhooks.
+        web.ignoring()
+                .antMatchers("/")
+                .antMatchers("/rest/wh/**");
     }
 }

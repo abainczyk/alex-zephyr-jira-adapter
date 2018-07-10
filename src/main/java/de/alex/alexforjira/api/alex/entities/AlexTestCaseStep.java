@@ -17,10 +17,7 @@
 package de.alex.alexforjira.api.alex.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AlexTestCaseStep {
@@ -33,9 +30,7 @@ public class AlexTestCaseStep {
 
     private boolean shouldFail = false;
 
-    private AlexSymbol symbol;
-
-    private List<AlexParameterValue> parameterValues = new ArrayList<>();
+    private AlexParameterizedSymbol pSymbol;
 
     private String expectedResult;
 
@@ -71,22 +66,6 @@ public class AlexTestCaseStep {
         this.shouldFail = shouldFail;
     }
 
-    public AlexSymbol getSymbol() {
-        return symbol;
-    }
-
-    public void setSymbol(AlexSymbol symbol) {
-        this.symbol = symbol;
-    }
-
-    public List<AlexParameterValue> getParameterValues() {
-        return parameterValues;
-    }
-
-    public void setParameterValues(List<AlexParameterValue> parameterValues) {
-        this.parameterValues = parameterValues;
-    }
-
     public String getExpectedResult() {
         return expectedResult;
     }
@@ -95,10 +74,13 @@ public class AlexTestCaseStep {
         this.expectedResult = expectedResult;
     }
 
-    public List<AlexParameterValue> getVisibleParameterValues() {
-        return parameterValues.stream().filter(val -> {
-            return !val.getParameter().isPrivate() &&
-                    val.getParameter().getType().equals("input");
-        }).collect(Collectors.toList());
+    @JsonProperty("pSymbol")
+    public AlexParameterizedSymbol getpSymbol() {
+        return pSymbol;
+    }
+
+    @JsonProperty("pSymbol")
+    public void setpSymbol(AlexParameterizedSymbol pSymbol) {
+        this.pSymbol = pSymbol;
     }
 }

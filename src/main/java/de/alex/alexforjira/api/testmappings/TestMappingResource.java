@@ -23,6 +23,8 @@ import de.alex.alexforjira.api.jira.entities.JiraIssue;
 import de.alex.alexforjira.db.h2.tables.pojos.TestMapping;
 import de.alex.alexforjira.security.ProjectForbiddenException;
 import de.alex.alexforjira.shared.JiraUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,9 +36,15 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
+/**
+ * Resource for test mappings.
+ */
 @RestController
 public class TestMappingResource {
+
+    private static final Logger log = LoggerFactory.getLogger(TestMappingResource.class);
 
     private static final String RESOURCE_URL = "/rest/projects/{jiraProjectId}/testMappings";
 
@@ -59,16 +67,39 @@ public class TestMappingResource {
         this.jiraUtils = jiraUtils;
     }
 
+    /**
+     * Get all test mappings that are registered under a specific Jira project.
+     *
+     * @param jiraProjectId
+     *         The ID of the project in Jira.
+     * @return The list of test mappings.
+     * @throws ProjectForbiddenException
+     *         If the project may not be accessed.
+     */
     @RequestMapping(
             method = RequestMethod.GET,
             value = RESOURCE_URL,
             produces = MediaType.APPLICATION_JSON
     )
     public ResponseEntity getAll(final @PathVariable("jiraProjectId") Long jiraProjectId) throws ProjectForbiddenException {
+        log.info("Entering getAll(jiraProjectId: {})", jiraProjectId);
         jiraUtils.checkIfProjectIsAllowed(jiraProjectId);
-        return ResponseEntity.ok(testMappingService.findByJiraProjectId(jiraProjectId));
+        final List<TestMapping> mappings = testMappingService.findByJiraProjectId(jiraProjectId);
+        log.info("Leaving getAll() with {}", mappings);
+        return ResponseEntity.ok(mappings);
     }
 
+    /**
+     * Create a new test mapping.
+     *
+     * @param jiraProjectId
+     *         The ID of the project in Jira.
+     * @param testMapping
+     *         The test mapping. If no ID for a test in ALEX is defined, a new test is created in ALEX.
+     * @return The created test mapping.
+     * @throws ProjectForbiddenException
+     *         If the project may not be accessed.
+     */
     @RequestMapping(
             method = RequestMethod.POST,
             value = RESOURCE_URL,
@@ -77,12 +108,15 @@ public class TestMappingResource {
     )
     public ResponseEntity create(final @PathVariable("jiraProjectId") Long jiraProjectId,
                                  final @RequestBody TestMapping testMapping) throws ProjectForbiddenException {
+        log.info("Entering create(jiraProjectId: {}, testMapping: {})", jiraProjectId, testMapping);
+
         jiraUtils.checkIfProjectIsAllowed(jiraProjectId);
         jiraUtils.checkIfProjectIsAllowed(testMapping.getJiraProjectId());
         final Long jiraTestId = testMapping.getJiraTestId();
 
         final TestMapping existingTestMapping = testMappingService.findOneByJiraTestId(jiraTestId);
         if (existingTestMapping != null) {
+            log.info("Leaving create() with {}", existingTestMapping);
             return ResponseEntity.ok(existingTestMapping);
         }
 
@@ -90,6 +124,7 @@ public class TestMappingResource {
         final Response res1 = jiraEndpoints.issue(jiraTestId).get();
 
         if (res1.getStatus() != Response.Status.OK.getStatusCode()) {
+            log.error("Leaving create(). Could not get issue in Jira. Status {}", res1.getStatus());
             return ResponseEntity.badRequest().body("The test with the id '" + jiraTestId + "' could not be fetched.");
         }
 
@@ -103,6 +138,7 @@ public class TestMappingResource {
             final Response res2 = alexEndpoints.tests(testMapping.getAlexProjectId()).post(Entity.json(testCase));
 
             if (res2.getStatus() != Response.Status.CREATED.getStatusCode()) {
+                log.error("Leaving create(). Could not create test in ALEX. Status {}", res2.getStatus());
                 return ResponseEntity.badRequest().body("The test could not be created in ALEX.");
             }
 
@@ -111,17 +147,31 @@ public class TestMappingResource {
         }
 
         final TestMapping createdTestMapping = testMappingService.create(testMapping);
+        log.info("Leaving create() with {}", createdTestMapping);
         return ResponseEntity.ok(createdTestMapping);
     }
 
+    /**
+     * Delete a test mapping.
+     *
+     * @param jiraProjectId
+     *         The ID of the project.
+     * @param mappingId
+     *         The ID of the mapping.
+     * @return 204 - No content.
+     * @throws ProjectForbiddenException
+     *         If the project may not be accessed.
+     */
     @RequestMapping(
             method = RequestMethod.DELETE,
             value = RESOURCE_URL + "/{mappingId}"
     )
     public ResponseEntity delete(final @PathVariable("jiraProjectId") Long jiraProjectId,
                                  final @PathVariable("mappingId") int mappingId) throws ProjectForbiddenException {
+        log.info("Entering delete(jiraProjectId: {}, mappingId: {})", jiraProjectId, mappingId);
         jiraUtils.checkIfProjectIsAllowed(jiraProjectId);
         testMappingService.deleteById(mappingId);
+        log.info("Leaving delete()");
         return ResponseEntity.noContent().build();
     }
 }

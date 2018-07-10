@@ -38,7 +38,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     private static final Logger log = LoggerFactory.getLogger(JiraVersionResource.class);
 
     /**
-     * Check that a user only accesses projects that are allowed.
+     * Check that a user only accesses projects that are allowed. Returns 403 - Forbidden.
      *
      * @param e
      *         The exception.
@@ -48,7 +48,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
      */
     @ExceptionHandler(value = {ProjectForbiddenException.class})
     protected ResponseEntity<Object> handleException(ProjectForbiddenException e, WebRequest request) {
-        log.error(e.getMessage());
+        log.error("Tried to access forbidden project. {}", e.getMessage());
         final RestError error = new RestError(HttpStatus.FORBIDDEN, e.getMessage());
         final HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);

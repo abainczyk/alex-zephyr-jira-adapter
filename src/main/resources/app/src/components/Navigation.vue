@@ -8,7 +8,7 @@
           <small class="text-muted">Adapter</small>
         </em>
       </router-link>
-      <div class="collapse navbar-collapse">
+      <div class="navbar-collapse">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
             <router-link :to="{name: 'projects'}" class="nav-link" active-class="active" exact>Projects</router-link>

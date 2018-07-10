@@ -21,8 +21,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JiraProjectEvent {
 
+    /** The type of the event. */
     private String type;
 
+    /** The ID of the project. */
     private Long projectId;
 
     public String getType() {

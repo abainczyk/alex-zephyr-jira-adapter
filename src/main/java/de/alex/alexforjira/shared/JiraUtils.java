@@ -34,6 +34,13 @@ public class JiraUtils {
         this.settingsService = settingsService;
     }
 
+    /**
+     * Given a list of Jira projects, return only those whose IDs are in  {@link SettingsService#getAllowedJiraProjectIds()}.
+     *
+     * @param projects
+     *         Projects in Jira.
+     * @return The filtered project list.
+     */
     public List<JiraProject> filterAllowedProjects(List<JiraProject> projects) {
         final List<Long> allowedProjectIds = settingsService.getAllowedJiraProjectIds();
         if (allowedProjectIds.isEmpty()) {
@@ -45,12 +52,19 @@ public class JiraUtils {
         }
     }
 
-    public boolean isAllowedProjectId(Long id) {
-        return settingsService.getAllowedJiraProjectIds().isEmpty() || settingsService.getAllowedJiraProjectIds().contains(id);
-    }
-
+    /**
+     * Check if a project ID is in the list of allowed project IDs in {@link SettingsService#getAllowedJiraProjectIds()}.
+     *
+     * @param projectId
+     *         The ID of the project.
+     * @throws ProjectForbiddenException
+     *         If the project ID is not in the list of allowed IDs.
+     */
     public void checkIfProjectIsAllowed(Long projectId) throws ProjectForbiddenException {
-        if (!isAllowedProjectId(projectId)) {
+        final boolean isAllowed = settingsService.getAllowedJiraProjectIds().isEmpty()
+                || settingsService.getAllowedJiraProjectIds().contains(projectId);
+
+        if (!isAllowed) {
             throw new ProjectForbiddenException("The project with the ID " + projectId + " may not be accessed.");
         }
     }
