@@ -137,7 +137,7 @@ The documentation is available at */swagger-ui.html* in a running application, e
 
 
 [alex]: https://github.com/learnlib/alex 
-[alex-plugin]: https://bitbucket.org/abainczyk/alex-zephyr-jira-plugin
+[alex-plugin]: https://github.com/abainczyk/alex-zephyr-jira-addon
 [jira]: https://de.atlassian.com/software/jira/download 
 [zephyr]: https://marketplace.atlassian.com/apps/1014681/zephyr-for-jira-test-management?hosting=server 
 [zapi]: https://marketplace.atlassian.com/apps/1211674/zapi?hosting=server&tab=overview 
