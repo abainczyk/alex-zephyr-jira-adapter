@@ -27,6 +27,8 @@ public class AlexSymbol {
 
     private String description;
 
+    private String expectedResult;
+
     public Long getId() {
         return id;
     }
@@ -49,5 +51,13 @@ public class AlexSymbol {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getExpectedResult() {
+        return expectedResult;
+    }
+
+    public void setExpectedResult(String expectedResult) {
+        this.expectedResult = expectedResult;
     }
 }

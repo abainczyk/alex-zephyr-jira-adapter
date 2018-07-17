@@ -18,6 +18,8 @@ package de.alex.alexforjira.api.jira.tests;
 
 import de.alex.alexforjira.api.alex.AlexEndpoints;
 import de.alex.alexforjira.api.alex.AlexProjectsResource;
+import de.alex.alexforjira.api.alex.entities.AlexParameterizedSymbol;
+import de.alex.alexforjira.api.alex.entities.AlexSymbol;
 import de.alex.alexforjira.api.alex.entities.AlexTestCase;
 import de.alex.alexforjira.api.alex.entities.AlexTestCaseStep;
 import de.alex.alexforjira.api.executions.ExecutionService;
@@ -175,14 +177,18 @@ public class JiraTestResource {
             // update the test steps
             for (int i = 0; i < alexTest.getSteps().size(); i++) {
                 final AlexTestCaseStep alexStep = alexTest.getSteps().get(i);
+                final AlexParameterizedSymbol alexPSymbol = alexStep.getpSymbol();
                 final JiraTestStep jiraStep = jiraSteps.get(i);
 
                 String description = alexStep.getpSymbol().getSymbol().getDescription();
-                description = description == null ? "" : "\n" + description;
 
                 jiraStep.setOrderId((long) i);
-                jiraStep.setStep(alexStep.getpSymbol().getSymbol().getName() + description);
-                jiraStep.setResult(alexStep.getExpectedResult());
+                jiraStep.setStep(alexPSymbol.getSymbol().getName() + "\n" + description);
+                if (alexStep.getExpectedResult().equals("")) {
+                    jiraStep.setResult(alexPSymbol.getSymbol().getExpectedResult());
+                } else {
+                    jiraStep.setResult(alexStep.getExpectedResult());
+                }
 
                 final List<String> data = new ArrayList<>();
                 alexStep.getpSymbol().getVisibleParameterValues().forEach(val -> {
